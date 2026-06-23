@@ -1,0 +1,44 @@
+2026-06-23 01:26:32 INFO  - Starting ItinerarioServiceApplication using Java 21.0.11 with PID 10116 (C:\Users\10100 1650Super\Desktop\proyecto_eventos_CASI (1)\proyecto_eventos\itinerario-service\target\classes started by 10100 1650Super in C:\Users\10100 1650Super\Desktop\proyecto_eventos_CASI (1)\proyecto_eventos\itinerario-service)
+2026-06-23 01:26:32 INFO  - No active profile set, falling back to 1 default profile: "default"
+2026-06-23 01:26:33 INFO  - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-23 01:26:33 INFO  - Finished Spring Data repository scanning in 192 ms. Found 1 JPA repository interface.
+2026-06-23 01:26:33 INFO  - Tomcat initialized with port 8096 (http)
+2026-06-23 01:26:33 INFO  - Starting service [Tomcat]
+2026-06-23 01:26:33 INFO  - Starting Servlet engine: [Apache Tomcat/11.0.21]
+2026-06-23 01:26:33 INFO  - Root WebApplicationContext: initialization completed in 1623 ms
+2026-06-23 01:26:34 INFO  - HikariPool-1 - Starting...
+2026-06-23 01:26:34 INFO  - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@716f94c1
+2026-06-23 01:26:34 INFO  - HikariPool-1 - Start completed.
+2026-06-23 01:26:36 INFO  - Reading from bd_itinerarios.databasechangelog
+2026-06-23 01:26:36 INFO  - Database is up to date, no changesets to execute
+2026-06-23 01:26:36 INFO  - Reading from bd_itinerarios.databasechangelog
+2026-06-23 01:26:36 INFO  - UPDATE SUMMARY
+2026-06-23 01:26:36 INFO  - Run:                          0
+2026-06-23 01:26:36 INFO  - Previously run:               2
+2026-06-23 01:26:36 INFO  - Filtered out:                 0
+2026-06-23 01:26:36 INFO  - -------------------------------
+2026-06-23 01:26:36 INFO  - Total change sets:            2
+2026-06-23 01:26:36 INFO  - Update summary generated
+2026-06-23 01:26:36 INFO  - Command execution complete
+2026-06-23 01:26:36 INFO  - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-06-23 01:26:36 INFO  - HHH000001: Hibernate ORM core version 7.2.12.Final
+2026-06-23 01:26:37 INFO  - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-23 01:26:37 WARN  - HHH000511: The 5.5.5 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly.The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2026-06-23 01:26:37 INFO  - HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3306/bd_itinerarios?createDatabaseIfNotExist=true]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 5.5.5
+	Default catalog/schema: bd_itinerarios/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-06-23 01:26:38 INFO  - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-23 01:26:38 INFO  - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-23 01:26:38 INFO  - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-23 01:26:39 WARN  - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-06-23 01:26:39 INFO  - Tomcat started on port 8096 (http) with context path '/'
+2026-06-23 01:26:39 INFO  - Started ItinerarioServiceApplication in 8.264 seconds (process running for 8.754)

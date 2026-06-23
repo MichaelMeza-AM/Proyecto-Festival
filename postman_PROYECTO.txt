@@ -1,0 +1,133 @@
+RUTA GENERAL: http://localhost:9090:
+COMANDO INICIO:  ./mvnw spring-boot:run
+
+token_admin: 
+
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJhZG1pbkBmZXN0aXZhbC5jb20iLCJyb2wiOiJST0xFX0FETUlOIiwiaWF0IjoxNzc5ODQzOTY3LCJleHAiOjE3Nzk4Nzk5Njd9.PMROM9Tx9KeUqt_mS_r8aigfPq9Rm3y-LHsJQgUv2WM
+
+token_usuario: 
+
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiZW1haWwiOiJmYW5AZ21haWwuY29tIiwicm9sIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzc5ODQ0MDM1LCJleHAiOjE3Nzk4ODAwMzV9.RYbdXbgTFbhEptkeFxANFol7N8qEHpe3d-W6eOCVW3s
+
+MICROSERVICIO DE AUTH () ------------------------------------------------------------------
+
+USUARIOS GUARDADOS EN LA BASE DE DATOS: 
+RUTA: http://localhost:9090/auth/login
+ADMIN LOGIN: 
+
+{ 
+	"email": "Admin@festival.com",
+	"password": "admin123"
+}
+
+USER LOGIN: 
+
+{ 
+	"email": "fan@gmail.com",
+	"password": "fan123"
+}
+
+
+REGISTRAR UN USUARIO NUEVO (POR DEFECTO USER): 
+RUTA: http://localhost:9090/auth/register
+
+{
+  "email": "nuevo.fan@festival.com",
+  "password": "password123"
+}
+
+token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwiZW1haWwiOiJudWV2by5mYW5AZmVzdGl2YWwuY29tIiwicm9sIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzc5ODUwNzU1LCJleHAiOjE3Nzk4ODY3NTV9.lf09ztorS8JWKS85HgHs04AvJZCo-dBF-16nJ9PsdPs
+
+MICROSERVICIO USUARIOS (GESTIÓN DE PERFILES)--------------------------------
+
+Como usuario puedo:
+
+A. Ver Mi Perfil: te devuelve el id para luego actualizar.
+Método: GET | ruta: http://localhost:9090/usuarios/me
+
+B. Actualizar Mi Perfil
+Método: PUT | ruta: http://localhost:9090/usuarios/3 (asumiendo que el id es el 3)
+
+{
+  "nombre": "Juan Pérez",
+  "email": "nuevo.fan@festival.com",
+  "rut": "19123456-7",
+  "fechaNacimiento": "15-05-1995"
+}
+
+
+MICROSERVICIO ARTISTA (CATALOGO) -----------------------------------------------
+
+CREAR ARTISTA (SOLO COMO ADMIN): RUTA: http://localhost:9090/artistas
+
+{
+  "nombre": "The Strokes",
+  "biografia": "Banda de rock estadounidense formada en Nueva York.",
+  "generoMusical": "Rock"
+}
+
+PARA ACTUALIZAR/BORRAR RECORDAR PONER ID: RUTA EJ: http://localhost:9090/artistas/11
+
+CREAR ESCENARIO: RUTA: http://localhost:9090/escenarios
+
+{
+  "nombre": "Rock Stage",
+  "puertaAcceso": "Puerta Norte",
+  "aforoMaximo": 20000,
+  "precio": 50000,
+  "zona": {
+    "id": 1,
+    "nombre": "Parque Central"
+  }
+}
+
+
+MICROSERVICIO PRESENTACIÓN (El cruce de datos) --------------------------------------------
+CREAR PRESENTACION: RUTA:http://localhost:9090/presentaciones
+
+{
+  "artistaId": 11,
+  "escenarioId": 7,
+  "fechaHora": "20-11-2026 20:00",
+  "duracionMinutos": 90
+}
+
+
+B. Buscar por Día 
+Método: GET | Auth: No authentication (Público)
+
+http://localhost:9090/presentaciones/dia?fecha=20-11-2026
+
+
+MICROSERVICIO ITINERARIO -----------------------------------------------
+
+A. Agregar show a Mi Agenda
+AGREGAR A ITINERARIO: RUTA: http://localhost:9090/itinerarios
+
+{
+  "presentacionId": 14
+}
+
+B. Forzar Cruce de Horarios (Test de Error)
+
+Si revisamos tu base de datos, tenemos este escenario perfecto para forzar un choque:
+
+Presentación ID 4 (Soda Stereo): Empieza el 20 de noviembre a las 18:00 y dura 90 minutos. Es decir, termina a las 19:30.
+Presentación ID 2 (Dua Lipa): Empieza el mismo día a las 19:00 y dura 60 minutos.
+
+Como Dua Lipa empieza media hora antes de que termine Soda Stereo, es humanamente imposible estar en ambos escenarios al mismo tiempo. ¡Vamos a ver cómo tu sistema lo bloquea!
+
+Método: POST 
+
+{
+  "presentacionId": 4
+}
+
+y luego
+
+{
+  "presentacionId": 2
+}
+
+
+para verificar con un método GET a http://localhost:9090/itinerarios/me En el JSON de respuesta que te devuelva, deberías ver solo a Soda Stereo (ID 4) y ni un solo rastro de Dua Lipa. Esto confirma que la transacción se abortó exitosamente y la integridad de la base de datos se mantuvo intacta.
