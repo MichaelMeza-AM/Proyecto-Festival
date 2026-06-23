@@ -1,0 +1,10 @@
+# Ignorar carpetas de compilación
+target/
+build/
+out/
+
+# Ignorar configuraciones del editor
+.vscode/
+
+# Ignorar archivos compilados de Java
+*.class
