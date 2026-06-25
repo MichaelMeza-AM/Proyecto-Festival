@@ -2,6 +2,7 @@
 target/
 build/
 out/
+logs/
 
 # Ignorar configuraciones del editor
 .vscode/
