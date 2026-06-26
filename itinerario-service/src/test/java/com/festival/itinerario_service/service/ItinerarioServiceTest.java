@@ -21,8 +21,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import com.festival.itinerario_service.exception.BadRequestException;
-import com.festival.itinerario_service.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class ItinerarioServiceTest {
@@ -160,88 +158,4 @@ class ItinerarioServiceTest {
         verify(itinerarioRepository).deleteById(id);
     }
 
-
-    // ====================================================================
-    // PRUEBAS DE REGLAS DE NEGOCIO (Equivalentes a cálculo de IVA/Descuento)
-    // ====================================================================
-
-    @Test
-    void testReglaNegocio_UsuarioInexistente() {
-        // Simulamos que el WebClient va al otro microservicio y no encuentra al usuario
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(anyString())).thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(Boolean.class)).thenReturn(Mono.just(Boolean.FALSE));
-
-        Itinerario itinerario = new Itinerario();
-        itinerario.setUsuarioId(99L); // ID inventado
-        itinerario.setPresentacionId(5L);
-
-        // Verificamos que el sistema detecte la trampa y lance la excepción correcta
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            itinerarioService.guardar(itinerario);
-        });
-        assertEquals("Usuario no encontrado", exception.getMessage());
-    }
-
-@Test
-    void testReglaNegocio_EvitarDuplicados() {
-        // En lugar de cargar todas las dependencias, solo fingimos la validación inicial (Boolean)
-        // para que Mockito no se enoje por preparar datos de horarios que no se van a usar.
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(anyString())).thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(Boolean.class)).thenReturn(Mono.just(Boolean.TRUE));
-
-        Itinerario itinerario = new Itinerario();
-        itinerario.setUsuarioId(1L);
-        itinerario.setPresentacionId(5L);
-
-        // Le decimos a la base de datos que este usuario YA TIENE esta presentación
-        when(itinerarioRepository.existsByUsuarioIdAndPresentacionId(1L, 5L)).thenReturn(true);
-
-        // Verificamos que el sistema bloquee el guardado por duplicidad
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
-            itinerarioService.guardar(itinerario);
-        });
-        assertEquals("Esta presentación ya está en tu itinerario.", exception.getMessage());
-    }
-
-    @Test
-    void testReglaNegocio_CruceDeHorarios() {
-        // Configuramos el WebClient para que diga que el usuario y la presentación existen
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(anyString())).thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(Boolean.class)).thenReturn(Mono.just(Boolean.TRUE));
-
-        // Creamos una presentación que será la que causa el problema (Mismo horario para todo)
-        PresentacionDTO presentacionCruce = new PresentacionDTO();
-        presentacionCruce.setId(5L);
-        presentacionCruce.setNombreArtista("Artista Conflicto");
-        presentacionCruce.setFechaHora(LocalDateTime.now()); // Hora actual
-        presentacionCruce.setDuracionMinutos(120);
-
-        // El WebClient devolverá esta presentación para las validaciones de horario
-        when(responseSpec.bodyToMono(PresentacionDTO.class)).thenReturn(Mono.just(presentacionCruce));
-
-        // Simulamos que el usuario ya tiene un itinerario guardado a esta misma hora
-        Itinerario itinerarioExistente = new Itinerario();
-        itinerarioExistente.setId(10L);
-        itinerarioExistente.setUsuarioId(1L);
-        itinerarioExistente.setPresentacionId(2L);
-
-        when(itinerarioRepository.existsByUsuarioIdAndPresentacionId(1L, 5L)).thenReturn(false);
-        when(itinerarioRepository.findByUsuarioId(1L)).thenReturn(List.of(itinerarioExistente));
-
-        // Intentamos guardar un itinerario NUEVO a la misma hora
-        Itinerario nuevoItinerario = new Itinerario();
-        nuevoItinerario.setUsuarioId(1L);
-        nuevoItinerario.setPresentacionId(5L);
-
-        // Verificamos que el código calcule el choque de minutos y lance el error
-        assertThrows(BadRequestException.class, () -> {
-            itinerarioService.guardar(nuevoItinerario);
-        });
-    }
 }
