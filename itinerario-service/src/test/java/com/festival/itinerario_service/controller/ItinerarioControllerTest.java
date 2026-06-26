@@ -116,7 +116,7 @@ public class ItinerarioControllerTest {
                         .principal(mockAuth) // Pasamos el Token fantasma
                         .contentType(MediaType.APPLICATION_JSON) // Decimos que es un JSON
                         .content(objectMapper.writeValueAsString(requestDTO))) // Traducimos el DTO a texto
-                .andExpect(status().isCreated()) // Tu controller responde 201 Created
+                .andExpect(status().isCreated()) 
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.usuarioId").value(1L));
     }
@@ -148,13 +148,13 @@ public class ItinerarioControllerTest {
     public void testEliminar() throws Exception {
         Itinerario existente = new Itinerario();
         existente.setId(1L);
-        existente.setUsuarioId(1L); // Le pertenece al usuario "1"
+        existente.setUsuarioId(1L); 
         
         when(itinerarioService.buscarPorId(1L)).thenReturn(Optional.of(existente));
         when(itinerarioService.eliminar(1L)).thenReturn(true);
 
         mockMvc.perform(delete("/itinerarios/1").principal(mockAuth))
-                .andExpect(status().isNoContent()); // Tu controller responde 204 No Content
+                .andExpect(status().isNoContent()); 
 
         verify(itinerarioService, times(1)).eliminar(1L);
     }
