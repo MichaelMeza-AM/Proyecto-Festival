@@ -41,7 +41,7 @@ public class UsuarioController {
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> obtenerUsuarioPorId(@PathVariable Long id, Authentication auth) {
         
-        // auth.getName() extrae el "Subject" del token. ¿Recuerdas que en Auth pusimos el ID como Subject?
+        // auth.getName() extrae el "Subject" del token.
         // Aquí lo recuperamos mágicamente sin ir a la base de datos.
         Long userIdToken = Long.parseLong(auth.getName()); 
 
@@ -50,7 +50,6 @@ public class UsuarioController {
                 .anyMatch(a -> a.getAuthority().equals("ADMIN") || a.getAuthority().equals("ROLE_ADMIN"));
 
         // 2. Bloqueamos si es un intruso husmeando perfiles ajenos
-        // SEGURIDAD: Si no eres Admin, y el ID de la URL (/usuarios/5) no es el tuyo (tu token dice que eres el 3), te rechaza.
         if (!isAdmin && !id.equals(userIdToken)) {
             throw new ForbiddenException("Acceso denegado: No tienes permiso sobre este perfil"); 
         }

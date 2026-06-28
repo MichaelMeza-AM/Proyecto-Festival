@@ -1,5 +1,7 @@
 package com.festival.artista_service.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -115,5 +117,15 @@ public class ArtistaControllerTest {
                 .andExpect(status().isNoContent()); // Tu controlador devuelve noContent() (204)
         
         verify(artistaService, times(1)).eliminar(1L);
+    }
+
+    @Test
+    public void testObtenerIdsPorGenero() throws Exception {
+        // Simulamos que el servicio devuelve una lista con el ID 1L al buscar "Rock"
+        when(artistaService.obtenerIdsPorGenero("Rock")).thenReturn(List.of(1L));
+
+        mockMvc.perform(get("/artistas/genero/Rock/ids"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0]").value(1L)); // Verificamos que el primer elemento del arreglo sea 1
     }
 }

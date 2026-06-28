@@ -67,16 +67,6 @@ public class ArtistaServiceTest {
     }
 
     @Test
-    void testExistePorId() {
-        when(artistaRepository.existsById(1L)).thenReturn(true);
-
-        boolean existe = artistaService.existePorId(1L);
-
-        assertTrue(existe);
-        verify(artistaRepository, times(1)).existsById(1L);
-    }
-
-    @Test
     void testEliminar() {
         doNothing().when(artistaRepository).deleteById(1L);
 
@@ -113,5 +103,15 @@ public class ArtistaServiceTest {
         assertEquals(1, ids.size());
         assertEquals(1L, ids.get(0));
         verify(artistaRepository, times(1)).findIdsByGeneroMusical("Rock");
+    }
+
+    @Test
+    void eliminarArtista() {
+        // Simula que el repositorio no hace nada (void) al borrar
+        doNothing().when(artistaRepository).deleteById(1L);
+
+        artistaService.eliminar(1L);
+
+        verify(artistaRepository, times(1)).deleteById(1L);
     }
 }

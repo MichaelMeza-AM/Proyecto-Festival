@@ -27,6 +27,8 @@ public class SecurityConfig {
                 .requestMatchers("/usuarios/exists/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/usuarios").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/usuarios").hasAnyAuthority("ROLE_ADMIN", "ADMIN")
+                // Damos permiso libre a la versión 2 para poder probar el HATEOAS visualmente
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/usuarios/v2/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
