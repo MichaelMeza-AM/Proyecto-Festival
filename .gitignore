@@ -1,3 +1,10 @@
+target/
+build/
+out/
+.vscode/
+*.class
+*.log
+*.gz
 # Ignorar carpetas de compilación
 target/
 build/
