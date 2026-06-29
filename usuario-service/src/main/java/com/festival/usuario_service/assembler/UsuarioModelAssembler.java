@@ -15,7 +15,6 @@ public class UsuarioModelAssembler implements RepresentationModelAssembler<Usuar
     @Override
     public EntityModel<Usuario> toModel(Usuario usuario) {
         return EntityModel.of(usuario,
-                // Ya no pasamos "null" aquí, solo el ID
                 linkTo(methodOn(UsuarioControllerV2.class).obtenerUsuarioPorId(usuario.getId())).withSelfRel(),
                 linkTo(methodOn(UsuarioControllerV2.class).listarUsuarios()).withRel("usuarios"));
     }

@@ -29,7 +29,6 @@ public class PresentacionController {
         this.presentacionService = presentacionService;
     }
 
-    // --- ENDPOINTS DINÁMICOS (GET) - Abiertos para todo público ---
 
     @GetMapping("/exists/{id}")
     public ResponseEntity<Boolean> existePresentacion(@PathVariable Long id) {
@@ -77,7 +76,7 @@ public class PresentacionController {
         return ResponseEntity.ok(dtos);
     }
 
-    // --- ENDPOINTS ADMINISTRATIVOS (POST, PUT, DELETE) - Protegidos ---
+    // Endpoints administrativos para el admi
 
     @PostMapping
     public ResponseEntity<PresentacionResponseDTO> crear(@Valid @RequestBody PresentacionRequestDTO dto) {
@@ -88,7 +87,6 @@ public class PresentacionController {
         
         logger.info("Petición POST procesada con éxito. Presentación ID {} creada.", nueva.getId());
         
-        // Retorno tipado con estado 201 Created y el DTO compuesto
         return ResponseEntity.status(HttpStatus.CREATED).body(presentacionService.obtenerDetalle(nueva));
     }
 
@@ -106,7 +104,6 @@ public class PresentacionController {
                 });
 
         logger.info("Petición PUT procesada con éxito para ID {}", id);
-        // Retorno tipado con estado 200 OK
         return ResponseEntity.ok(presentacionService.obtenerDetalle(actualizada));
     }
 
@@ -120,7 +117,6 @@ public class PresentacionController {
         }
         
         logger.info("Petición DELETE procesada con éxito. Presentación ID {} eliminada.", id);
-        // Respuesta HTTP 204 sin cuerpo
         return ResponseEntity.noContent().build();
     }
 }
