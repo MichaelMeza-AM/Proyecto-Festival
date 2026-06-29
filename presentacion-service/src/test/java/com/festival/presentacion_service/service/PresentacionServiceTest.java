@@ -44,7 +44,6 @@ class PresentacionServiceTest {
     void setUp() throws Exception {
         presentacionService = new PresentacionService(presentacionRepository, webClient);
         
-        // Usamos Reflection para inyectar los paths de las @Value (exactamente como el profesor)
         Field artistaPathField = PresentacionService.class.getDeclaredField("artistaPath");
         artistaPathField.setAccessible(true);
         artistaPathField.set(presentacionService, "http://api/artista/exists/%d");

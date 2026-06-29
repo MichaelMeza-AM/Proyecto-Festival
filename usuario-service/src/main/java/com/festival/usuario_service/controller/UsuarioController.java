@@ -42,14 +42,13 @@ public class UsuarioController {
     public ResponseEntity<UsuarioDTO> obtenerUsuarioPorId(@PathVariable Long id, Authentication auth) {
         
         // auth.getName() extrae el "Subject" del token.
-        // Aquí lo recuperamos mágicamente sin ir a la base de datos.
         Long userIdToken = Long.parseLong(auth.getName()); 
 
         // Verifica si dentro del token viene el rol de administrador.
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ADMIN") || a.getAuthority().equals("ROLE_ADMIN"));
 
-        // 2. Bloqueamos si es un intruso husmeando perfiles ajenos
+        // 2. Bloqueamos si es un intruso 
         if (!isAdmin && !id.equals(userIdToken)) {
             throw new ForbiddenException("Acceso denegado: No tienes permiso sobre este perfil"); 
         }
@@ -61,12 +60,10 @@ public class UsuarioController {
         return ResponseEntity.ok(UsuarioDTO.fromModel(usuario));
     }
 
-  @GetMapping("/me") //devuelve el perfil del usuario autenticado
+    @GetMapping("/me")
     public ResponseEntity<UsuarioDTO> obtenerMiPerfil(Authentication auth) {
-        // auth.getName() ahora nos entrega directamente el ID (Ej: "2")
-        Long miId = Long.parseLong(auth.getName()); 
-        
-        // Buscamos súper rápido por ID en lugar de por email
+  
+        Long miId = Long.parseLong(auth.getName());       
         Usuario miPerfil = usuarioService.buscarPorId(miId)
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontró un perfil asociado a tu cuenta."));
         
@@ -79,7 +76,7 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioDTO.fromModel(nuevo));
     }
 
-    @PutMapping("/{id}") // ACTUALIZAR PERFIL (Con validación de identidad)
+    @PutMapping("/{id}")
     public ResponseEntity<UsuarioDTO> actualizarUsuario(
             @PathVariable Long id, 
             @Valid @RequestBody UsuarioDTO usuarioDTO, 
@@ -93,7 +90,7 @@ public class UsuarioController {
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ADMIN") || a.getAuthority().equals("ROLE_ADMIN"));
 
-        if (!isAdmin && !usuarioExistente.getId().equals(userIdToken)) {    // SEGURIDAD: Solo el dueño del perfil o un ADMIN pueden editar
+        if (!isAdmin && !usuarioExistente.getId().equals(userIdToken)) {    
             throw new ForbiddenException("Acceso denegado: No tienes permiso sobre este perfil");
         }
 
