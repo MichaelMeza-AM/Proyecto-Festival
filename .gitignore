@@ -5,3 +5,14 @@ out/
 *.class
 *.log
 *.gz
+# Ignorar carpetas de compilación
+target/
+build/
+out/
+logs/
+
+# Ignorar configuraciones del editor
+.vscode/
+
+# Ignorar archivos compilados de Java
+*.class

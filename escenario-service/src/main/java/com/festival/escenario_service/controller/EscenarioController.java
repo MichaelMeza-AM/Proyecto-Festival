@@ -47,7 +47,6 @@ public class EscenarioController {
     @PostMapping
     public ResponseEntity<EscenarioDTO> crearEscenario(@Valid @RequestBody EscenarioDTO escenarioDto) {
         Escenario nuevo = escenarioService.guardar(escenarioDto.toModel());
-        // Código HTTP 201 Created y retorno directo del DTO limpio
         return ResponseEntity.status(HttpStatus.CREATED).body(EscenarioDTO.fromModel(nuevo));
     }
 
@@ -56,7 +55,6 @@ public class EscenarioController {
         Escenario actualizado = escenarioService.actualizar(id, escenarioDto.toModel())
                 .orElseThrow(() -> new ResourceNotFoundException("No se puede actualizar. El escenario con ID " + id + " no existe."));
         
-        // Código HTTP 200 OK y retorno directo del DTO limpio
         return ResponseEntity.ok(EscenarioDTO.fromModel(actualizado));
     }
 
@@ -67,7 +65,6 @@ public class EscenarioController {
         }
         
         escenarioService.eliminar(id);
-        // Respuesta estándar 204 No Content para eliminaciones exitosas
         return ResponseEntity.noContent().build();
     }
 }

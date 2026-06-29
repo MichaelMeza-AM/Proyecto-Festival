@@ -9,57 +9,55 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          # ¡OJO! Esta clave secreta tiene que ser EXACTAMENTE la misma 
-          # que usemos en tu microservicio de Auth para crear el token.
           secret-key: esta_es_mi_compleja_clave_secreta_para_el_festival_2026
 
   cloud:
     gateway:
       routes:
-        # 1. Seguridad (El guardia de la entrada)
+        # 1. Seguridad
         - id: auth-service
-          uri: http://localhost:8094  
+          uri: http://auth-service:8094  
           predicates:
             - Path=/auth/**
 
         # 2. Gestión de Usuarios
         - id: usuario-service
-          uri: http://localhost:8091  
+          uri: http://usuario-service:8091  
           predicates:
             - Path=/usuarios/**
 
         # 3. Lineup: Artistas
         - id: artista-service
-          uri: http://localhost:8092
+          uri: http://artista-service:8092
           predicates:
             - Path=/artistas/**
 
         # 4. Lineup: Escenarios
         - id: escenario-service
-          uri: http://localhost:8093
+          uri: http://escenario-service:8093
           predicates:
             - Path=/escenarios/**
 
         # 5. Programación de Shows
         - id: presentacion-service
-          uri: http://localhost:8095
+          uri: http://presentacion-service:8095
           predicates:
             - Path=/presentaciones/**
 
         # 6. Favoritos / Mi Horario
         - id: itinerario-service
-          uri: http://localhost:8096  
+          uri: http://itinerario-service:8096  
           predicates:
             - Path=/itinerarios/**
             
-        # 7. carrito
+        # 7. Carrito
         - id: compra-service
-          uri: http://localhost:8097  
+          uri: http://compra-service:8097  
           predicates:
             - Path=/compras/**
 
         # 8. Pagos
         - id: pago-service
-          uri: http://localhost:8098
+          uri: http://pago-service:8098
           predicates:
             - Path=/pagos/**

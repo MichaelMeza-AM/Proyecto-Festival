@@ -25,10 +25,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // Todos pueden ver el catálogo de artistas (GET público)
                 .requestMatchers(HttpMethod.GET, "/artistas/**").permitAll()
-                
-                // Solo el ADMIN puede agregar, modificar o eliminar artistas
                 .anyRequest().hasAnyAuthority("ROLE_ADMIN", "ADMIN")
             )
             .oauth2ResourceServer(oauth2 -> oauth2

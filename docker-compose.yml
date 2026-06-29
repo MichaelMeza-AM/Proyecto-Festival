@@ -1,0 +1,76 @@
+x-common-env: &common-env
+  jwt.secret: "esta_es_mi_compleja_clave_secreta_para_el_festival_2026"
+
+services:
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "9090:9090"
+    environment:
+      <<: *common-env
+    depends_on:
+      - auth-service
+      - usuario-service
+      - artista-service
+      - escenario-service
+      - presentacion-service
+      - itinerario-service
+      - compra-service
+      - pago-service
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "8094:8094"
+    environment:
+      <<: *common-env
+
+  usuario-service:
+    build: ./usuario-service
+    ports:
+      - "8091:8091"
+    environment:
+      <<: *common-env
+
+  artista-service:
+    build: ./artista-service
+    ports:
+      - "8092:8092"
+    environment:
+      <<: *common-env
+
+  escenario-service:
+    build: ./escenario-service
+    ports:
+      - "8093:8093"
+    environment:
+      <<: *common-env
+
+  presentacion-service:
+    build: ./presentacion-service
+    ports:
+      - "8095:8095"
+    environment:
+      <<: *common-env
+
+  itinerario-service:
+    build: ./itinerario-service
+    ports:
+      - "8096:8096"
+    environment:
+      <<: *common-env
+
+  compra-service:
+    build: ./compra-service
+    ports:
+      - "8097:8097"
+    environment:
+      <<: *common-env
+
+  pago-service:
+    build: ./pago-service
+    ports:
+      - "8098:8098"
+    environment:
+      <<: *common-env

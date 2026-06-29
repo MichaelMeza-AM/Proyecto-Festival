@@ -25,10 +25,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // Todos pueden ver la lista de escenarios (público)
                 .requestMatchers(HttpMethod.GET, "/escenarios/**").permitAll()
-                
-                // Para crear, editar o borrar un escenario, debes ser ADMIN
                 .anyRequest().hasAnyAuthority("ROLE_ADMIN", "ADMIN")
             )
             .oauth2ResourceServer(oauth2 -> oauth2

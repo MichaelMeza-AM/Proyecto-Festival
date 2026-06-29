@@ -51,8 +51,7 @@ public class EscenarioService {
             escenarioExistente.setPuertaAcceso(detallesNuevos.getPuertaAcceso());
             escenarioExistente.setAforoMaximo(detallesNuevos.getAforoMaximo());
             escenarioExistente.setPrecio(detallesNuevos.getPrecio()); 
-            
-            // Reemplazo seguro con el objeto administrado por Hibernate
+          
             escenarioExistente.setZona(zonaReal); 
             
             return escenarioRepository.save(escenarioExistente);
