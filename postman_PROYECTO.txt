@@ -131,3 +131,19 @@ y luego
 
 
 para verificar con un método GET a http://localhost:9090/itinerarios/me En el JSON de respuesta que te devuelva, deberías ver solo a Soda Stereo (ID 4) y ni un solo rastro de Dua Lipa. Esto confirma que la transacción se abortó exitosamente y la integridad de la base de datos se mantuvo intacta.
+
+compras
+
+{
+    "escenarioId": 1,
+    "fechaAsistencia": "20-11-2026 12:00",
+    "cantidad": 2
+}
+
+pago
+
+{
+    "idCompra": 1,
+    "medioPago": "Tarjeta de Crédito",
+    "porcentajeDescuento": 15
+}

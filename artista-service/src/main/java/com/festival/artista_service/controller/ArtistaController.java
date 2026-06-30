@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @RequestMapping("/artistas")
@@ -64,4 +66,5 @@ public class ArtistaController {
         List<Long> ids = artistaService.obtenerIdsPorGenero(genero);
         return ResponseEntity.ok(ids);
     }
+    
 }
