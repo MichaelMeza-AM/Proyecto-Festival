@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.festival.artista_service.assembler.ArtistaModelAssembler;
-import com.festival.artista_service.exception.ResourceNotFoundException;
 import com.festival.artista_service.model.Artista;
 import com.festival.artista_service.service.ArtistaService;
 
@@ -40,9 +39,7 @@ public class ArtistaControllerV2 {
 
     @GetMapping("/{id}")
     public EntityModel<Artista> obtenerPorId(@PathVariable Long id) {
-        Artista artista = artistaService.buscarPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró el artista con ID " + id));
-        
+        Artista artista = artistaService.buscarPorId(id);        
         return assembler.toModel(artista);
     }
 }

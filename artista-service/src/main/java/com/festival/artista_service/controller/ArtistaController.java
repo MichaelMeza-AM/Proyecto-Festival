@@ -1,7 +1,6 @@
 package com.festival.artista_service.controller;
 
 import com.festival.artista_service.dto.ArtistaDTO;
-import com.festival.artista_service.exception.ResourceNotFoundException;
 import com.festival.artista_service.model.Artista;
 import com.festival.artista_service.service.ArtistaService;
 import jakarta.validation.Valid;
@@ -39,9 +38,7 @@ public class ArtistaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ArtistaDTO> obtenerPorId(@PathVariable Long id) {
-        Artista artista = artistaService.buscarPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró el artista con ID " + id));
-        
+        Artista artista = artistaService.buscarPorId(id);
         return ResponseEntity.ok(ArtistaDTO.fromModel(artista));
     }
 
@@ -52,18 +49,12 @@ public class ArtistaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ArtistaDTO> actualizarArtista(@PathVariable Long id, @Valid @RequestBody ArtistaDTO artistaDto) {
-        Artista actualizado = artistaService.actualizar(id, artistaDto.toModel())
-                .orElseThrow(() -> new ResourceNotFoundException("No se puede actualizar. El artista con ID " + id + " no existe."));
-        
+        Artista actualizado = artistaService.actualizar(id, artistaDto.toModel());
         return ResponseEntity.ok(ArtistaDTO.fromModel(actualizado));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarArtista(@PathVariable Long id) {
-        if (!artistaService.existePorId(id)) {
-            throw new ResourceNotFoundException("No se puede eliminar. El artista con ID " + id + " no existe.");
-        }
-        
+    public ResponseEntity<Void> eliminarArtista(@PathVariable Long id) {   
         artistaService.eliminar(id);
         return ResponseEntity.noContent().build();
     }

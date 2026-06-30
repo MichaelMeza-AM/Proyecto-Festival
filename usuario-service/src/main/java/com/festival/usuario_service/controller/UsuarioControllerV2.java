@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.festival.usuario_service.assembler.UsuarioModelAssembler;
-import com.festival.usuario_service.exception.ResourceNotFoundException;
 import com.festival.usuario_service.model.Usuario;
 import com.festival.usuario_service.service.UsuarioService;
 
@@ -41,9 +40,7 @@ public class UsuarioControllerV2 {
     @GetMapping("/{id}")
     public EntityModel<Usuario> obtenerUsuarioPorId(@PathVariable Long id) {
         
-        Usuario usuario = usuarioService.buscarPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("El usuario con ID " + id + " no existe"));
-        
+        Usuario usuario = usuarioService.buscarPorId(id); 
         return assembler.toModel(usuario);
     }
 }

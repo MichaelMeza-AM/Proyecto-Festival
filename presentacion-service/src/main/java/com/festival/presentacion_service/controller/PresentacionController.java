@@ -2,7 +2,6 @@ package com.festival.presentacion_service.controller;
 
 import com.festival.presentacion_service.dto.PresentacionRequestDTO;
 import com.festival.presentacion_service.dto.PresentacionResponseDTO;
-import com.festival.presentacion_service.exception.ResourceNotFoundException;
 import com.festival.presentacion_service.model.Presentacion;
 import com.festival.presentacion_service.service.PresentacionService;
 
@@ -33,7 +32,7 @@ public class PresentacionController {
     @GetMapping("/exists/{id}")
     public ResponseEntity<Boolean> existePresentacion(@PathVariable Long id) {
         logger.info("GET /presentaciones/exists/{} - Solicitud de validación de existencia", id);
-        boolean existe = presentacionService.buscarPorId(id).isPresent();
+        boolean existe = presentacionService.existePorId(id);
         return ResponseEntity.ok(existe);
     }
 
@@ -49,12 +48,7 @@ public class PresentacionController {
     @GetMapping("/{id}")
     public ResponseEntity<PresentacionResponseDTO> obtenerPorId(@PathVariable Long id) {
         logger.info("GET /presentaciones/{} - Solicitud para buscar por ID", id);
-        Presentacion presentacion = presentacionService.buscarPorId(id)
-                .orElseThrow(() -> {
-                    logger.warn("Búsqueda fallida: La presentación ID {} no fue encontrada", id);
-                    return new ResourceNotFoundException("No se encontró la presentación con ID " + id);
-                });
-        
+        Presentacion presentacion = presentacionService.buscarPorId(id);
         return ResponseEntity.ok(presentacionService.obtenerDetalle(presentacion));
     }
 
@@ -86,7 +80,6 @@ public class PresentacionController {
         Presentacion nueva = presentacionService.guardar(dto.toModel());
         
         logger.info("Petición POST procesada con éxito. Presentación ID {} creada.", nueva.getId());
-        
         return ResponseEntity.status(HttpStatus.CREATED).body(presentacionService.obtenerDetalle(nueva));
     }
 
@@ -96,12 +89,7 @@ public class PresentacionController {
                     id, dto.getArtistaId(), dto.getEscenarioId());
 
         Presentacion p = dto.toModel();
-        
-        Presentacion actualizada = presentacionService.actualizar(id, p)
-                .orElseThrow(() -> {
-                    logger.warn("Actualización fallida: La presentación ID {} no existe", id);
-                    return new ResourceNotFoundException("No se puede actualizar. Presentación ID " + id + " no existe.");
-                });
+        Presentacion actualizada = presentacionService.actualizar(id, p);
 
         logger.info("Petición PUT procesada con éxito para ID {}", id);
         return ResponseEntity.ok(presentacionService.obtenerDetalle(actualizada));
@@ -111,10 +99,7 @@ public class PresentacionController {
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         logger.info("DELETE /presentaciones/{} - Petición de eliminación", id);
         
-        if (!presentacionService.eliminar(id)) {
-            logger.warn("Eliminación fallida: La presentación ID {} no existe", id);
-            throw new ResourceNotFoundException("No se puede eliminar. Presentación ID " + id + " no existe.");
-        }
+        presentacionService.eliminar(id);
         
         logger.info("Petición DELETE procesada con éxito. Presentación ID {} eliminada.", id);
         return ResponseEntity.noContent().build();

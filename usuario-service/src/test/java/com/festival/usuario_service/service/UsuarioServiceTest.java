@@ -76,8 +76,9 @@ class UsuarioServiceTest {
     @Test
     void testBuscarPorId() {
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
-        Optional<Usuario> resultado = usuarioService.buscarPorId(1L);
-        assertTrue(resultado.isPresent());
+        Usuario resultado = usuarioService.buscarPorId(1L);
+        assertNotNull(resultado);
+        assertEquals(1L, resultado.getId());
     }
 
     @Test
@@ -92,12 +93,12 @@ class UsuarioServiceTest {
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
 
         // Simulamos que actualiza con datos que no colisionan
-        Optional<Usuario> resultado = usuarioService.actualizarUsuario(
+         Usuario resultado = usuarioService.actualizarUsuario(
                 1L, "Juan Actualizado", "juan@test.com", "12345678-9", LocalDate.of(1995, 5, 20)
         );
 
-        assertTrue(resultado.isPresent());
-        assertEquals("Juan Actualizado", resultado.get().getNombre());
+        assertNotNull(resultado);
+        assertEquals("Juan Actualizado", resultado.getNombre());
         verify(usuarioRepository).save(any(Usuario.class));
     }
 
@@ -106,9 +107,8 @@ class UsuarioServiceTest {
         when(usuarioRepository.existsById(1L)).thenReturn(true);
         doNothing().when(usuarioRepository).deleteById(1L);
 
-        boolean eliminado = usuarioService.eliminarUsuario(1L);
-
-        assertTrue(eliminado);
+        usuarioService.eliminarUsuario(1L);
+        
         verify(usuarioRepository).deleteById(1L);
     }
 }

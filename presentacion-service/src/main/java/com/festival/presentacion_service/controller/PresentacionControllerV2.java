@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.festival.presentacion_service.assembler.PresentacionModelAssembler;
-import com.festival.presentacion_service.exception.ResourceNotFoundException;
 import com.festival.presentacion_service.model.Presentacion;
 import com.festival.presentacion_service.service.PresentacionService;
 
@@ -40,9 +39,7 @@ public class PresentacionControllerV2 {
 
     @GetMapping("/{id}")
     public EntityModel<Presentacion> obtenerPorId(@PathVariable Long id) {
-        Presentacion presentacion = presentacionService.buscarPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la presentación con ID " + id));
-        
+        Presentacion presentacion = presentacionService.buscarPorId(id);
         return assembler.toModel(presentacion);
     }
 }

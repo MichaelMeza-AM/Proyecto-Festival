@@ -24,7 +24,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class UsuarioControllerTest {
@@ -75,7 +74,7 @@ public class UsuarioControllerTest {
 
     @Test
     public void testObtenerUsuarioPorId() throws Exception {
-        when(usuarioService.buscarPorId(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioService.buscarPorId(1L)).thenReturn(usuario);
         
         mockMvc.perform(get("/usuarios/1").principal(mockAuthAdmin))
                 .andExpect(status().isOk())
@@ -84,7 +83,7 @@ public class UsuarioControllerTest {
 
     @Test
     public void testObtenerMiPerfil() throws Exception {
-        when(usuarioService.buscarPorId(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioService.buscarPorId(1L)).thenReturn(usuario);
         
         mockMvc.perform(get("/usuarios/me").principal(mockAuthAdmin))
                 .andExpect(status().isOk())
@@ -104,9 +103,9 @@ public class UsuarioControllerTest {
 
     @Test
     public void testActualizarUsuario() throws Exception {
-        when(usuarioService.buscarPorId(1L)).thenReturn(Optional.of(usuario));
+        
         when(usuarioService.actualizarUsuario(eq(1L), anyString(), anyString(), anyString(), any(LocalDate.class)))
-                .thenReturn(Optional.of(usuario));
+                .thenReturn(usuario);
 
         mockMvc.perform(put("/usuarios/1")
                         .principal(mockAuthAdmin)
@@ -118,7 +117,7 @@ public class UsuarioControllerTest {
 
     @Test
     public void testEliminarUsuario() throws Exception {
-        when(usuarioService.eliminarUsuario(1L)).thenReturn(true);
+        doNothing().when(usuarioService).eliminarUsuario(1L);
 
         mockMvc.perform(delete("/usuarios/1").principal(mockAuthAdmin))
                 .andExpect(status().isNoContent());

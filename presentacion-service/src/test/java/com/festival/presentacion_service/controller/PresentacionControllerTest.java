@@ -77,7 +77,7 @@ public class PresentacionControllerTest {
 
     @Test
     public void testObtenerPorId() throws Exception {
-        when(presentacionService.buscarPorId(1L)).thenReturn(Optional.of(presentacion));
+        when(presentacionService.buscarPorId(1L)).thenReturn(presentacion);
         when(presentacionService.obtenerDetalle(any(Presentacion.class))).thenReturn(responseDto);
 
         mockMvc.perform(get("/presentaciones/1"))
@@ -101,7 +101,7 @@ public class PresentacionControllerTest {
 
     @Test
     public void testActualizar() throws Exception {
-        when(presentacionService.actualizar(eq(1L), any(Presentacion.class))).thenReturn(Optional.of(presentacion));
+        when(presentacionService.actualizar(eq(1L), any(Presentacion.class))).thenReturn(presentacion);
         when(presentacionService.obtenerDetalle(any(Presentacion.class))).thenReturn(responseDto);
 
         mockMvc.perform(put("/presentaciones/1")
@@ -113,7 +113,7 @@ public class PresentacionControllerTest {
 
     @Test
     public void testEliminar() throws Exception {
-        when(presentacionService.eliminar(1L)).thenReturn(true);
+        doNothing().when(presentacionService).eliminar(1L);
 
         mockMvc.perform(delete("/presentaciones/1"))
                 .andExpect(status().isNoContent());

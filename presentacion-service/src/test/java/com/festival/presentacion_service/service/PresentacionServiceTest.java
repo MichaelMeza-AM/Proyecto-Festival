@@ -90,10 +90,10 @@ class PresentacionServiceTest {
     @Test
     void testBuscarPorId() {
         when(presentacionRepository.findById(1L)).thenReturn(Optional.of(presentacion));
-        Optional<Presentacion> resultado = presentacionService.buscarPorId(1L);
+        Presentacion resultado = presentacionService.buscarPorId(1L);
         
-        assertTrue(resultado.isPresent());
-        assertEquals(1L, resultado.get().getId());
+        assertNotNull(resultado);
+        assertEquals(1L, resultado.getId());
         verify(presentacionRepository).findById(1L);
     }
 
@@ -103,9 +103,9 @@ class PresentacionServiceTest {
         when(presentacionRepository.findById(1L)).thenReturn(Optional.of(presentacion));
         when(presentacionRepository.save(any(Presentacion.class))).thenReturn(presentacion);
 
-        Optional<Presentacion> resultado = presentacionService.actualizar(1L, presentacion);
+        Presentacion resultado = presentacionService.actualizar(1L, presentacion);
 
-        assertTrue(resultado.isPresent());
+        assertNotNull(resultado);
         verify(presentacionRepository).findById(1L);
         verify(presentacionRepository).save(any(Presentacion.class));
     }
@@ -115,9 +115,8 @@ class PresentacionServiceTest {
         when(presentacionRepository.existsById(1L)).thenReturn(true);
         doNothing().when(presentacionRepository).deleteById(1L);
         
-        boolean eliminado = presentacionService.eliminar(1L);
+        presentacionService.eliminar(1L);
         
-        assertTrue(eliminado);
         verify(presentacionRepository).deleteById(1L);
     }
 

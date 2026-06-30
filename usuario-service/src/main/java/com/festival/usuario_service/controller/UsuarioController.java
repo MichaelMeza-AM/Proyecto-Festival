@@ -2,7 +2,6 @@ package com.festival.usuario_service.controller;
 
 import com.festival.usuario_service.dto.UsuarioDTO;
 import com.festival.usuario_service.exception.ForbiddenException;
-import com.festival.usuario_service.exception.ResourceNotFoundException;
 import com.festival.usuario_service.model.Usuario;
 import com.festival.usuario_service.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -54,19 +53,14 @@ public class UsuarioController {
         }
 
         // 3. Si todo está en orden, devolvemos los datos
-        Usuario usuario = usuarioService.buscarPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("El usuario con ID " + id + " no existe"));
-        
+        Usuario usuario = usuarioService.buscarPorId(id);
         return ResponseEntity.ok(UsuarioDTO.fromModel(usuario));
     }
 
     @GetMapping("/me")
     public ResponseEntity<UsuarioDTO> obtenerMiPerfil(Authentication auth) {
-  
         Long miId = Long.parseLong(auth.getName());       
-        Usuario miPerfil = usuarioService.buscarPorId(miId)
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró un perfil asociado a tu cuenta."));
-        
+        Usuario miPerfil = usuarioService.buscarPorId(miId);
         return ResponseEntity.ok(UsuarioDTO.fromModel(miPerfil));
     }
 
@@ -82,15 +76,13 @@ public class UsuarioController {
             @Valid @RequestBody UsuarioDTO usuarioDTO, 
             Authentication auth) {
 
-        Usuario usuarioExistente = usuarioService.buscarPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("El usuario con ID " + id + " no existe"));
-
+    
         Long userIdToken = Long.parseLong(auth.getName()); 
         
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ADMIN") || a.getAuthority().equals("ROLE_ADMIN"));
 
-        if (!isAdmin && !usuarioExistente.getId().equals(userIdToken)) {    
+        if (!isAdmin && !id.equals(userIdToken)) {    
             throw new ForbiddenException("Acceso denegado: No tienes permiso sobre este perfil");
         }
 
@@ -100,7 +92,7 @@ public class UsuarioController {
                 usuarioDTO.getEmail(),
                 usuarioDTO.getRut(),
                 usuarioDTO.getFechaNacimiento()
-        ).orElseThrow(() -> new ResourceNotFoundException("Error al actualizar: Usuario no encontrado"));
+        );
 
         return ResponseEntity.ok(UsuarioDTO.fromModel(actualizado));
     }
@@ -121,10 +113,7 @@ public class UsuarioController {
         }
 
         // 4. Si pasa la seguridad, procedemos a borrar
-        if (!usuarioService.eliminarUsuario(id)) {
-            throw new ResourceNotFoundException("No se puede eliminar. Usuario no encontrado");
-        }
-        
-        return ResponseEntity.noContent().build();
+       usuarioService.eliminarUsuario(id);
+       return ResponseEntity.noContent().build();
     }
 }

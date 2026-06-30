@@ -20,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class EscenarioControllerTest {
@@ -61,7 +60,7 @@ public class EscenarioControllerTest {
 
     @Test
     public void testObtenerPorId() throws Exception {
-        when(escenarioService.buscarPorId(1L)).thenReturn(Optional.of(escenario));
+        when(escenarioService.buscarPorId(1L)).thenReturn(escenario);
 
         mockMvc.perform(get("/escenarios/1"))
                 .andExpect(status().isOk())
@@ -82,7 +81,7 @@ public class EscenarioControllerTest {
 
     @Test
     public void testActualizarEscenario() throws Exception {
-        when(escenarioService.actualizar(eq(1L), any(Escenario.class))).thenReturn(Optional.of(escenario));
+        when(escenarioService.actualizar(eq(1L), any(Escenario.class))).thenReturn(escenario);
 
         mockMvc.perform(put("/escenarios/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -93,7 +92,6 @@ public class EscenarioControllerTest {
 
     @Test
     public void testEliminarEscenario() throws Exception {
-        when(escenarioService.existePorId(1L)).thenReturn(true);
         doNothing().when(escenarioService).eliminar(1L);
 
         mockMvc.perform(delete("/escenarios/1"))

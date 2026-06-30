@@ -59,15 +59,16 @@ public class ArtistaServiceTest {
     void testBuscarPorId() {
         when(artistaRepository.findById(1L)).thenReturn(Optional.of(artista));
 
-        Optional<Artista> resultado = artistaService.buscarPorId(1L);
+        Artista resultado = artistaService.buscarPorId(1L);
 
-        assertTrue(resultado.isPresent());
-        assertEquals("Los Prisioneros", resultado.get().getNombre());
+        assertNotNull(resultado);
+        assertEquals("Los Prisioneros", resultado.getNombre());
         verify(artistaRepository, times(1)).findById(1L);
     }
 
     @Test
     void testEliminar() {
+        when(artistaRepository.existsById(1L)).thenReturn(true);
         doNothing().when(artistaRepository).deleteById(1L);
 
         artistaService.eliminar(1L);
@@ -83,12 +84,12 @@ public class ArtistaServiceTest {
         // Simulamos que al guardar retorna el objeto modificado
         when(artistaRepository.save(any(Artista.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Optional<Artista> resultado = artistaService.actualizar(1L, detallesNuevos);
+        Artista resultado = artistaService.actualizar(1L, detallesNuevos);
 
-        assertTrue(resultado.isPresent());
-        assertEquals("Los Prisioneros Modificado", resultado.get().getNombre());
-        assertEquals("Nueva biografía", resultado.get().getBiografia());
-        assertEquals("Rock-Pop", resultado.get().getGeneroMusical());
+        assertNotNull(resultado);
+        assertEquals("Los Prisioneros Modificado", resultado.getNombre());
+        assertEquals("Nueva biografía", resultado.getBiografia());
+        assertEquals("Rock-Pop", resultado.getGeneroMusical());
         verify(artistaRepository, times(1)).findById(1L);
         verify(artistaRepository, times(1)).save(any(Artista.class));
     }
@@ -107,7 +108,7 @@ public class ArtistaServiceTest {
 
     @Test
     void eliminarArtista() {
-        // Simula que el repositorio no hace nada (void) al borrar
+        when(artistaRepository.existsById(1L)).thenReturn(true);
         doNothing().when(artistaRepository).deleteById(1L);
 
         artistaService.eliminar(1L);

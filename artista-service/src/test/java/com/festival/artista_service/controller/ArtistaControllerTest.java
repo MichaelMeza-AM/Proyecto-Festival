@@ -20,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class ArtistaControllerTest {
@@ -71,7 +70,7 @@ public class ArtistaControllerTest {
 
     @Test
     public void testObtenerPorId() throws Exception {
-        when(artistaService.buscarPorId(1L)).thenReturn(Optional.of(artista));
+        when(artistaService.buscarPorId(1L)).thenReturn(artista);
 
         mockMvc.perform(get("/artistas/1"))
                 .andExpect(status().isOk())
@@ -96,7 +95,7 @@ public class ArtistaControllerTest {
 
     @Test
     public void testActualizarArtista() throws Exception {
-        when(artistaService.actualizar(eq(1L), any(Artista.class))).thenReturn(Optional.of(artista));
+        when(artistaService.actualizar(eq(1L), any(Artista.class))).thenReturn(artista);
 
         mockMvc.perform(put("/artistas/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -109,8 +108,6 @@ public class ArtistaControllerTest {
 
     @Test
     public void testEliminarArtista() throws Exception {
-        // Tu controlador primero verifica si existe el ID antes de borrar
-        when(artistaService.existePorId(1L)).thenReturn(true);
         doNothing().when(artistaService).eliminar(1L);
 
         mockMvc.perform(delete("/artistas/1"))

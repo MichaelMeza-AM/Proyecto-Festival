@@ -1,7 +1,6 @@
 package com.festival.escenario_service.controller;
 
 import com.festival.escenario_service.dto.EscenarioDTO;
-import com.festival.escenario_service.exception.ResourceNotFoundException;
 import com.festival.escenario_service.model.Escenario;
 import com.festival.escenario_service.service.EscenarioService;
 import jakarta.validation.Valid;
@@ -33,9 +32,7 @@ public class EscenarioController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EscenarioDTO> obtenerPorId(@PathVariable Long id) {
-        Escenario escenario = escenarioService.buscarPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró el escenario con ID " + id));
-        
+        Escenario escenario = escenarioService.buscarPorId(id);
         return ResponseEntity.ok(EscenarioDTO.fromModel(escenario));
     }
 
@@ -52,18 +49,12 @@ public class EscenarioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<EscenarioDTO> actualizarEscenario(@PathVariable Long id, @Valid @RequestBody EscenarioDTO escenarioDto) {
-        Escenario actualizado = escenarioService.actualizar(id, escenarioDto.toModel())
-                .orElseThrow(() -> new ResourceNotFoundException("No se puede actualizar. El escenario con ID " + id + " no existe."));
-        
+        Escenario actualizado = escenarioService.actualizar(id, escenarioDto.toModel());
         return ResponseEntity.ok(EscenarioDTO.fromModel(actualizado));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarEscenario(@PathVariable Long id) {
-        if (!escenarioService.existePorId(id)) {
-            throw new ResourceNotFoundException("No se puede eliminar. El escenario con ID " + id + " no existe.");
-        }
-        
         escenarioService.eliminar(id);
         return ResponseEntity.noContent().build();
     }

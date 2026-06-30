@@ -1,13 +1,13 @@
 package com.festival.usuario_service.service;
 
 import com.festival.usuario_service.exception.BadRequestException;
+import com.festival.usuario_service.exception.ResourceNotFoundException;
 import com.festival.usuario_service.model.Usuario;
 import com.festival.usuario_service.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UsuarioService {
@@ -35,8 +35,9 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Optional<Usuario> buscarPorId(Long id) {
-        return usuarioRepository.findById(id);
+    public Usuario buscarPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("El usuario con ID " + id + " no fue encontrado."));
     }
 
     public boolean existePorId(Long id) {
@@ -44,8 +45,8 @@ public class UsuarioService {
     }
 
     // ACTUALIZAR (Perfil completo del asistente)
-    public Optional<Usuario> actualizarUsuario(Long id, String nuevoNombre, String nuevoEmail, String nuevoRut, LocalDate nuevaFecha) {
-        return usuarioRepository.findById(id).map(usuario -> {
+    public Usuario actualizarUsuario(Long id, String nuevoNombre, String nuevoEmail, String nuevoRut, LocalDate nuevaFecha) {
+            Usuario usuario = buscarPorId(id);
             
             // Validar si quiere cambiar el email, que el nuevo no esté usado por OTRO usuario
             if (!usuario.getEmail().equals(nuevoEmail) && usuarioRepository.existsByEmail(nuevoEmail)) {
@@ -63,14 +64,13 @@ public class UsuarioService {
             usuario.setFechaNacimiento(nuevaFecha);
             
             return usuarioRepository.save(usuario);
-        });
+        
     }
 
-    public boolean eliminarUsuario(Long id) {
-        if (usuarioRepository.existsById(id)) {
-            usuarioRepository.deleteById(id);
-            return true;
+    public void eliminarUsuario(Long id) {
+        if (!usuarioRepository.existsById(id)) {
+            throw new ResourceNotFoundException("No se puede eliminar. El usuario con ID " + id + " no fue encontrado.");
         }
-        return false;
+        usuarioRepository.deleteById(id);
     }
 }

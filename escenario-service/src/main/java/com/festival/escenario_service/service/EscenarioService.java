@@ -8,7 +8,6 @@ import com.festival.escenario_service.repository.ZonaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EscenarioService {
@@ -25,8 +24,9 @@ public class EscenarioService {
         return escenarioRepository.findAll();
     }
 
-    public Optional<Escenario> buscarPorId(Long id) {
-        return escenarioRepository.findById(id);
+    public Escenario buscarPorId(Long id) {
+        return escenarioRepository.findById(id)
+         .orElseThrow(() -> new ResourceNotFoundException("No se encontró el escenario con ID " + id));
     }
     
     public boolean existePorId(Long id) {
@@ -41,8 +41,8 @@ public class EscenarioService {
         return escenarioRepository.save(escenario);
     }
 
-    public Optional<Escenario> actualizar(Long id, Escenario detallesNuevos) {
-        return escenarioRepository.findById(id).map(escenarioExistente -> {
+    public Escenario actualizar(Long id, Escenario detallesNuevos) {
+        Escenario escenarioExistente = buscarPorId(id);
 
             Zona zonaReal = zonaRepository.findById(detallesNuevos.getZona().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("No se puede actualizar. La zona geográfica con ID " + detallesNuevos.getZona().getId() + " no existe."));
@@ -55,10 +55,13 @@ public class EscenarioService {
             escenarioExistente.setZona(zonaReal); 
             
             return escenarioRepository.save(escenarioExistente);
-        });
+        
     }
 
     public void eliminar(Long id) {
+        if (!escenarioRepository.existsById(id)) {
+            throw new ResourceNotFoundException("No se puede eliminar. El escenario con ID " + id + " no existe.");
+        }
         escenarioRepository.deleteById(id);
     }
 }

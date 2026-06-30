@@ -1,10 +1,10 @@
 package com.festival.artista_service.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.festival.artista_service.exception.ResourceNotFoundException;
 import com.festival.artista_service.model.Artista;
 import com.festival.artista_service.repository.ArtistaRepository;
 
@@ -26,8 +26,9 @@ public class ArtistaService {
         return artistaRepository.findAll();
     }
 
-    public Optional<Artista> buscarPorId(Long id) {
-        return artistaRepository.findById(id);
+    public Artista buscarPorId(Long id) {
+        return artistaRepository.findById(id)
+         .orElseThrow(() -> new ResourceNotFoundException("Artista no encontrado con id: " + id));
     }
 
     public boolean existePorId(Long id) {
@@ -35,18 +36,21 @@ public class ArtistaService {
     }
 
     public void eliminar(Long id) {
+        if (!artistaRepository.existsById(id)) {
+            throw new ResourceNotFoundException("No se puede eliminar. El artista  con id: " + id + " no existe.");
+        }
         artistaRepository.deleteById(id);
     }
 
-    public Optional<Artista> actualizar(Long id, Artista detallesNuevos) {
-        return artistaRepository.findById(id).map(artistaExistente -> {
+    public Artista actualizar(Long id, Artista detallesNuevos) {
+        Artista artistaExistente = buscarPorId(id);
             // Actualizamos los campos
             artistaExistente.setNombre(detallesNuevos.getNombre());
             artistaExistente.setBiografia(detallesNuevos.getBiografia());
             artistaExistente.setGeneroMusical(detallesNuevos.getGeneroMusical());
             // Guardamos el artista modificado
             return artistaRepository.save(artistaExistente);
-        });
+        
     }
 
     public List<Long> obtenerIdsPorGenero(String genero) {

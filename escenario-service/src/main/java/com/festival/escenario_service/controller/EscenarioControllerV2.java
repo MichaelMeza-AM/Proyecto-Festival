@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.festival.escenario_service.assembler.EscenarioModelAssembler;
-import com.festival.escenario_service.exception.ResourceNotFoundException;
 import com.festival.escenario_service.model.Escenario;
 import com.festival.escenario_service.service.EscenarioService;
 
@@ -40,9 +39,7 @@ public class EscenarioControllerV2 {
 
     @GetMapping("/{id}")
     public EntityModel<Escenario> obtenerPorId(@PathVariable Long id) {
-        Escenario escenario = escenarioService.buscarPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró el escenario con ID " + id));
-        
+        Escenario escenario = escenarioService.buscarPorId(id);
         return assembler.toModel(escenario);
     }
 }

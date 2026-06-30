@@ -57,9 +57,17 @@ public class PresentacionService {
         return presentaciones;
     }
 
-    public Optional<Presentacion> buscarPorId(Long id) {
+    public Presentacion buscarPorId(Long id) {
         logger.info("Buscando presentación por id={}", id);
-        return presentacionRepository.findById(id);
+        return presentacionRepository.findById(id)
+         .orElseThrow(() -> {
+            logger.warn("Busqueda fallida: Presentación id={} no encontrada", id);
+            return new ResourceNotFoundException("No se encontró la presentación con id: " + id);
+        });
+    }
+
+    public boolean existePorId(Long id){
+        return presentacionRepository.existsById(id);
     }
 
     public Presentacion guardar(Presentacion presentacion) {
@@ -73,10 +81,11 @@ public class PresentacionService {
         return guardada;
     }
 
-    public Optional<Presentacion> actualizar(Long id, Presentacion detallesNuevos) {
+    public Presentacion actualizar(Long id, Presentacion detallesNuevos) {
         logger.info("Iniciando actualización de presentación id={}", id);
 
-        return presentacionRepository.findById(id).map(presentacionExistente -> {
+        Presentacion presentacionExistente = buscarPorId(id);
+        
             logger.debug("Presentación id={} encontrada. Validando nuevos datos: artistaId={}, escenarioId={}",
                     id, detallesNuevos.getArtistaId(), detallesNuevos.getEscenarioId());
 
@@ -90,18 +99,17 @@ public class PresentacionService {
             Presentacion actualizada = presentacionRepository.save(presentacionExistente);
             logger.info("Presentación id={} actualizada exitosamente", actualizada.getId());
             return actualizada;
-        });
+       
     }
 
-    public boolean eliminar(Long id) {
+    public void eliminar(Long id) {
         logger.info("Intentando eliminar presentación id={}", id);
-        if (presentacionRepository.existsById(id)) {
-            presentacionRepository.deleteById(id);
-            logger.info("Presentación id={} eliminada con éxito", id);
-            return true;
+        if (!presentacionRepository.existsById(id)) {
+            logger.warn("No se pudo eliminar: presentación id={} no existe", id);
+            throw new ResourceNotFoundException("No se encontró la presentación con id: " + id);
         }
-        logger.warn("No se pudo eliminar: presentación id={} no existe", id);
-        return false;
+        presentacionRepository.deleteById(id);
+        logger.info("Presentación id={} eliminada exitosamente", id);
     }
 
     private void validarDependencias(Long artistaId, Long escenarioId) {

@@ -62,8 +62,8 @@ public class EscenarioServiceTest {
     @Test
     void testBuscarPorId() {
         when(escenarioRepository.findById(1L)).thenReturn(Optional.of(escenario));
-        Optional<Escenario> resultado = escenarioService.buscarPorId(1L);
-        assertTrue(resultado.isPresent());
+        Escenario resultado = escenarioService.buscarPorId(1L);
+        assertNotNull(resultado);
     }
 
     @Test
@@ -72,15 +72,15 @@ public class EscenarioServiceTest {
         when(zonaRepository.findById(1L)).thenReturn(Optional.of(zona));
         when(escenarioRepository.save(any(Escenario.class))).thenAnswer(i -> i.getArgument(0));
 
-        Optional<Escenario> resultado = escenarioService.actualizar(1L, escenario);
+        Escenario resultado = escenarioService.actualizar(1L, escenario);
 
-        assertTrue(resultado.isPresent());
+        assertNotNull(resultado);
         verify(escenarioRepository, times(1)).save(any(Escenario.class));
     }
 
     @Test
     void testEliminar() {
-        // Simula que el repositorio no hace nada (void) al borrar
+        when(escenarioRepository.existsById(1L)).thenReturn(true);
         doNothing().when(escenarioRepository).deleteById(1L);
 
         escenarioService.eliminar(1L);
