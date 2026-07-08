@@ -1,5 +1,7 @@
 package com.festival.itinerario_service.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -130,8 +132,8 @@ public class ItinerarioControllerTest {
         existente.setUsuarioId(1L); // Le pertenece al usuario "1" del mockAuth
 
         // Mockeamos la búsqueda para que el controlador verifique que somos los dueños
-        when(itinerarioService.buscarPorId(1L)).thenReturn(Optional.of(existente));
-        when(itinerarioService.actualizar(eq(1L), any(Itinerario.class))).thenReturn(Optional.of(existente));
+        when(itinerarioService.buscarPorId(1L)).thenReturn(existente);
+        when(itinerarioService.actualizar(eq(1L), any(Itinerario.class))).thenReturn(existente);
         when(itinerarioService.obtenerDetalleEnriquecido(any())).thenReturn(responseDTO);
 
         mockMvc.perform(put("/itinerarios/1")
@@ -150,8 +152,8 @@ public class ItinerarioControllerTest {
         existente.setId(1L);
         existente.setUsuarioId(1L); 
         
-        when(itinerarioService.buscarPorId(1L)).thenReturn(Optional.of(existente));
-        when(itinerarioService.eliminar(1L)).thenReturn(true);
+        when(itinerarioService.buscarPorId(1L)).thenReturn(existente);
+        doNothing().when(itinerarioService).eliminar(1L);
 
         mockMvc.perform(delete("/itinerarios/1").principal(mockAuth))
                 .andExpect(status().isNoContent()); 

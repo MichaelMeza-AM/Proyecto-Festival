@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ItinerarioService {
@@ -37,9 +36,9 @@ public class ItinerarioService {
         this.webClient = webClient;
     }
 
-    // Método necesario para validar la propiedad en el controlador
-    public Optional<Itinerario> buscarPorId(Long id) {
-        return itinerarioRepository.findById(id);
+    public Itinerario buscarPorId(Long id) {
+        return itinerarioRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Itinerario no encontrado"));
     }
 
     public Itinerario guardar(Itinerario itinerario) {
@@ -70,8 +69,11 @@ public class ItinerarioService {
         // --- MODIFICACIÓN AQUÍ: Le pasamos 'null' porque es un guardado nuevo, no hay nada que ignorar ---
         validarCruceHorarios(itinerario.getUsuarioId(), itinerario.getPresentacionId(), null);
 
-        // 5. Guardado final
-        itinerario.setFechaAgregado(LocalDateTime.now());
+
+        if (itinerario.getFechaAgregado() == null) {
+            itinerario.setFechaAgregado(LocalDateTime.now());
+        }
+
         Itinerario guardado = itinerarioRepository.save(itinerario);
         
         logger.info("Itinerario guardado con éxito. ID: {}", guardado.getId());
@@ -102,49 +104,42 @@ public class ItinerarioService {
         return itinerarioRepository.findAll();
     }
     
-    // --- MODIFICACIÓN AQUÍ: Método actualizar robustecido ---
-    public Optional<Itinerario> actualizar(Long id, Itinerario detallesNuevos) {
+    public Itinerario actualizar(Long id, Itinerario detallesNuevos) {
         logger.info("Iniciando actualización de itinerario ID: {}", id);
 
-        return itinerarioRepository.findById(id).map(itinerarioExistente -> {
-            
-            // 1. Validar existencia básica en otros microservicios
-            Boolean existeUsuario = validarExistencia(usuarioPath, detallesNuevos.getUsuarioId(), "usuario");
-            Boolean existePresentacion = validarExistencia(presentacionPath, detallesNuevos.getPresentacionId(), "presentación");
+        Itinerario itinerarioExistente = buscarPorId(id); // Si no existe, lanza la excepción automáticamente
 
-            if (!Boolean.TRUE.equals(existeUsuario) || !Boolean.TRUE.equals(existePresentacion)) {
-                logger.warn("No se pudo actualizar: uno de los IDs proporcionados no existe");
-                throw new ResourceNotFoundException("Los IDs de usuario o presentación no son válidos");
-            }
+        Boolean existeUsuario = validarExistencia(usuarioPath, detallesNuevos.getUsuarioId(), "usuario");
+        Boolean existePresentacion = validarExistencia(presentacionPath, detallesNuevos.getPresentacionId(), "presentación");
 
-            // 2. Validar duplicado SOLO si el usuario está intentando cambiar la presentación actual por una distinta
-            if (!itinerarioExistente.getPresentacionId().equals(detallesNuevos.getPresentacionId()) &&
-                itinerarioRepository.existsByUsuarioIdAndPresentacionId(detallesNuevos.getUsuarioId(), detallesNuevos.getPresentacionId())) {
-                throw new BadRequestException("Esta presentación ya está en tu itinerario.");
-            }
+        if (!Boolean.TRUE.equals(existeUsuario) || !Boolean.TRUE.equals(existePresentacion)) {
+            logger.warn("No se pudo actualizar: uno de los IDs proporcionados no existe");
+            throw new ResourceNotFoundException("Los IDs de usuario o presentación no son válidos");
+        }
 
-            // 3. Validar cruce de horarios pasándole el ID actual para que NO choque consigo mismo
-            validarCruceHorarios(detallesNuevos.getUsuarioId(), detallesNuevos.getPresentacionId(), id);
+        if (!itinerarioExistente.getPresentacionId().equals(detallesNuevos.getPresentacionId()) &&
+            itinerarioRepository.existsByUsuarioIdAndPresentacionId(detallesNuevos.getUsuarioId(), detallesNuevos.getPresentacionId())) {
+            throw new BadRequestException("Esta presentación ya está en tu itinerario.");
+        }
 
-            // 4. Aplicar cambios y guardar
-            itinerarioExistente.setUsuarioId(detallesNuevos.getUsuarioId());
-            itinerarioExistente.setPresentacionId(detallesNuevos.getPresentacionId());
-            
-            Itinerario actualizado = itinerarioRepository.save(itinerarioExistente);
-            logger.info("Itinerario ID: {} actualizado correctamente", id);
-            return actualizado;
-        });
+        validarCruceHorarios(detallesNuevos.getUsuarioId(), detallesNuevos.getPresentacionId(), id);
+
+        itinerarioExistente.setUsuarioId(detallesNuevos.getUsuarioId());
+        itinerarioExistente.setPresentacionId(detallesNuevos.getPresentacionId());
+        
+        Itinerario actualizado = itinerarioRepository.save(itinerarioExistente);
+        logger.info("Itinerario ID: {} actualizado correctamente", id);
+        return actualizado;
     }
 
-    public boolean eliminar(Long id) {
+    public void eliminar(Long id) {
         logger.info("Intentando eliminar itinerario ID: {}", id);
-        if (itinerarioRepository.existsById(id)) {
-            itinerarioRepository.deleteById(id);
-            logger.info("Itinerario ID: {} eliminado con éxito", id);
-            return true;
+        if (!itinerarioRepository.existsById(id)) {
+            logger.warn("No se pudo eliminar: el itinerario ID: {} no existe", id);
+            throw new ResourceNotFoundException("No se puede eliminar. Itinerario ID " + id + " no existe.");
         }
-        logger.warn("No se pudo eliminar: el itinerario ID: {} no existe", id);
-        return false;
+        itinerarioRepository.deleteById(id);
+        logger.info("Itinerario ID: {} eliminado con éxito", id);
     }
 
     public ItinerarioResponseDTO obtenerDetalleEnriquecido(Itinerario itinerario) {

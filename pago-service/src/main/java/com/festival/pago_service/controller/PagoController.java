@@ -24,14 +24,13 @@ public class PagoController {
         this.pagoService = pagoService;
     }
 
-    // --- C: CREATE (Crear Pago) ---
     @PostMapping
     public ResponseEntity<PagoResponseDTO> procesarPago(
             @RequestHeader("Authorization") String tokenAuth,
             Authentication auth,
             @Valid @RequestBody PagoRequestDTO request) {
         
-        // Extraemos el ID directamente del token firmado
+      
         Long usuarioId = Long.parseLong(auth.getName());
         
         Pago pagoGuardado = pagoService.procesarPago(request, tokenAuth, usuarioId);
@@ -40,7 +39,7 @@ public class PagoController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // --- R: READ (Leer todos) ---
+
     @GetMapping
     public ResponseEntity<List<PagoResponseDTO>> listarTodos() {
         List<PagoResponseDTO> pagos = pagoService.listarTodos().stream()
@@ -50,7 +49,6 @@ public class PagoController {
         return ResponseEntity.ok(pagos);
     }
 
-    // --- R: READ (Leer por ID con Seguridad) ---
     @GetMapping("/{id}")
     public ResponseEntity<PagoResponseDTO> buscarPorId(@PathVariable Long id, Authentication auth) {
         Pago existente = pagoService.buscarPorId(id);
@@ -66,7 +64,6 @@ public class PagoController {
         return ResponseEntity.ok(PagoResponseDTO.fromModel(existente));
     }
 
-    // --- U: UPDATE (Actualizar con Seguridad) ---
     @PutMapping("/{id}")
     public ResponseEntity<PagoResponseDTO> actualizar(
             @PathVariable Long id, 
@@ -87,7 +84,6 @@ public class PagoController {
         return ResponseEntity.ok(PagoResponseDTO.fromModel(pagoActualizado));
     }
 
-    // --- D: DELETE (Eliminar con Seguridad) ---
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id, Authentication auth) {
         Pago existente = pagoService.buscarPorId(id);

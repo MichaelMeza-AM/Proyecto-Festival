@@ -41,28 +41,29 @@ public class CompraService {
         return compraRepository.findAll();
     }
 
-    public Optional<Compra> buscarPorId(Long id) {
-        return compraRepository.findById(id);
+    public Compra buscarPorId(Long id) {
+        return compraRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("No se encontró la compra con ID: " + id));
     }
 
-    public Optional<Compra> actualizar(Long id, CompraRequestDTO detallesNuevos) {
+    public Compra actualizar(Long id, CompraRequestDTO detallesNuevos) {
         logger.info("Actualizando registro de compra ID: {}", id);
 
-        return compraRepository.findById(id).map(compraExistente -> {
-            compraExistente.setEscenarioId(detallesNuevos.getEscenarioId());
-            compraExistente.setCantidad(detallesNuevos.getCantidad());
-            compraExistente.setFechaAsistencia(detallesNuevos.getFechaAsistencia());
-            compraExistente.setFechaCompra(LocalDateTime.now());
-            return compraRepository.save(compraExistente);
-        });
+        Compra compraExistente = buscarPorId(id); 
+
+        compraExistente.setEscenarioId(detallesNuevos.getEscenarioId());
+        compraExistente.setCantidad(detallesNuevos.getCantidad());
+        compraExistente.setFechaAsistencia(detallesNuevos.getFechaAsistencia());
+        compraExistente.setFechaCompra(LocalDateTime.now());
+        
+        return compraRepository.save(compraExistente);
     }
 
-    public boolean eliminar(Long id) {
-        if (compraRepository.existsById(id)) {
-            compraRepository.deleteById(id);
-            logger.info("Compra ID: {} eliminada", id);
-            return true;
+    public void eliminar(Long id) {
+        if (!compraRepository.existsById(id)) {
+            throw new ResourceNotFoundException("No se encontró la compra con ID " + id);
         }
-        return false;
+        compraRepository.deleteById(id);
+        logger.info("Compra ID: {} eliminada", id);
     }
 }
