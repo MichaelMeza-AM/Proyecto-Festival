@@ -112,10 +112,10 @@ class ItinerarioServiceTest {
         itinerario.setId(id);
         
         when(itinerarioRepository.findById(id)).thenReturn(Optional.of(itinerario));
-        Optional<Itinerario> resultado = itinerarioService.buscarPorId(id);
+        Itinerario resultado = itinerarioService.buscarPorId(id);
         
-        assertTrue(resultado.isPresent());
-        assertEquals(id, resultado.get().getId());
+        assertNotNull(resultado);
+        assertEquals(id, resultado.getId());
         verify(itinerarioRepository).findById(id);
     }
 
@@ -140,10 +140,10 @@ class ItinerarioServiceTest {
         when(itinerarioRepository.findByUsuarioId(1L)).thenReturn(List.of(existente));
         
         when(itinerarioRepository.save(any(Itinerario.class))).thenReturn(cambios);
-        Optional<Itinerario> resultado = itinerarioService.actualizar(id, cambios);
+        Itinerario resultado = itinerarioService.actualizar(id, cambios);
         
-        assertTrue(resultado.isPresent());
-        assertEquals(10L, resultado.get().getPresentacionId());
+        assertNotNull(resultado);
+        assertEquals(10L, resultado.getPresentacionId());
         
         verify(itinerarioRepository).findById(id);
         verify(itinerarioRepository).save(any(Itinerario.class));
@@ -153,8 +153,8 @@ class ItinerarioServiceTest {
     void testEliminar() {
         Long id = 1L;
         when(itinerarioRepository.existsById(id)).thenReturn(true);
-        boolean eliminado = itinerarioService.eliminar(id);
-        assertTrue(eliminado);
+        doNothing().when(itinerarioRepository).deleteById(id);
+        itinerarioService.eliminar(id);
         verify(itinerarioRepository).deleteById(id);
     }
 

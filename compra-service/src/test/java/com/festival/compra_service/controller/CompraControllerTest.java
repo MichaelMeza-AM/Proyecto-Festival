@@ -94,7 +94,7 @@ public class CompraControllerTest {
 
     @Test
     public void testObtenerPorId() throws Exception {
-        when(compraService.buscarPorId(1L)).thenReturn(Optional.of(compra));
+        when(compraService.buscarPorId(1L)).thenReturn(compra);
 
         mockMvc.perform(get("/compras/1")
                         .principal(auth))
@@ -104,8 +104,8 @@ public class CompraControllerTest {
 
     @Test
     public void testActualizar() throws Exception {
-        when(compraService.buscarPorId(1L)).thenReturn(Optional.of(compra));
-        when(compraService.actualizar(eq(1L), any(CompraRequestDTO.class))).thenReturn(Optional.of(compra));
+        when(compraService.buscarPorId(1L)).thenReturn(compra);
+        when(compraService.actualizar(eq(1L), any(CompraRequestDTO.class))).thenReturn(compra);
 
         mockMvc.perform(put("/compras/1")
                         .principal(auth)
@@ -117,11 +117,13 @@ public class CompraControllerTest {
 
     @Test
     public void testEliminar() throws Exception {
-        when(compraService.buscarPorId(1L)).thenReturn(Optional.of(compra));
-        when(compraService.eliminar(1L)).thenReturn(true);
+        when(compraService.buscarPorId(1L)).thenReturn(compra);
+        doNothing().when(compraService).eliminar(1L);
 
         mockMvc.perform(delete("/compras/1")
                         .principal(auth))
                 .andExpect(status().isNoContent());
+                
+        verify(compraService, times(1)).eliminar(1L);
     }
 }

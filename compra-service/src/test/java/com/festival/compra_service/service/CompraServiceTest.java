@@ -91,7 +91,7 @@ class CompraServiceTest {
         
         when(compraRepository.findById(id)).thenReturn(Optional.of(compra));
         
-        Optional<Compra> resultado = compraService.buscarPorId(id);
+        Compra resultado = compraService.buscarPorId(id);
         
         assertTrue(resultado.isPresent());
         assertEquals(id, resultado.get().getId());
@@ -120,11 +120,11 @@ class CompraServiceTest {
         when(compraRepository.findById(id)).thenReturn(Optional.of(existente));
         when(compraRepository.save(any(Compra.class))).thenReturn(actualizada);
         
-        Optional<Compra> resultado = compraService.actualizar(id, cambios);
+        Compra resultado = compraService.actualizar(id, cambios);
         
-        assertTrue(resultado.isPresent());
-        assertEquals(3L, resultado.get().getEscenarioId());
-        assertEquals(5, resultado.get().getCantidad());
+        assertNotNull(resultado);
+        assertEquals(3L, resultado.getEscenarioId());
+        assertEquals(5, resultado.getCantidad());
         
         verify(compraRepository).findById(id);
         verify(compraRepository).save(any(Compra.class));
@@ -135,9 +135,8 @@ class CompraServiceTest {
         Long id = 1L;
         when(compraRepository.existsById(id)).thenReturn(true);
         
-        boolean eliminado = compraService.eliminar(id);
+        compraService.eliminar(id);
         
-        assertTrue(eliminado);
         verify(compraRepository).deleteById(id);
     }
 }

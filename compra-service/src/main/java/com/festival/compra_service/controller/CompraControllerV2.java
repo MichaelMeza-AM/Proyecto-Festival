@@ -38,7 +38,7 @@ public class CompraControllerV2 {
         
         List<EntityModel<CompraResponseDTO>> compras = compraService.listarTodos().stream()
                 .map(CompraResponseDTO::fromModel)
-                .map(assembler::toModel)
+                .map(dto -> assembler.toModel(dto))
                 .collect(Collectors.toList());
                 
         return CollectionModel.of(compras, linkTo(methodOn(CompraControllerV2.class).listarTodos()).withSelfRel());
@@ -48,8 +48,7 @@ public class CompraControllerV2 {
     public EntityModel<CompraResponseDTO> obtenerCompra(@PathVariable Long id) {
         logger.info("V2 GET /compras/v2/{} - Obteniendo compra individual", id);
         
-        Compra compra = compraService.buscarPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la compra con ID " + id));
+        Compra compra = compraService.buscarPorId(id);
                 
         CompraResponseDTO dto = CompraResponseDTO.fromModel(compra);
         

@@ -50,7 +50,6 @@ class PagoServiceTest {
         escenarioUrlField.set(pagoService, "http://api/escenario");
     }
 
-    // --- PRUEBAS CRUD ESENCIALES ---
 
     @Test
     void testListarTodos() {

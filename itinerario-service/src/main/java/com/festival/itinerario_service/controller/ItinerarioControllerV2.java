@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.festival.itinerario_service.assemblers.ItinerarioModelAssembler;
 import com.festival.itinerario_service.dto.ItinerarioResponseDTO;
-import com.festival.itinerario_service.exception.ResourceNotFoundException;
 import com.festival.itinerario_service.model.Itinerario;
 import com.festival.itinerario_service.service.ItinerarioService;
 
@@ -48,9 +47,7 @@ public class ItinerarioControllerV2 {
     public EntityModel<ItinerarioResponseDTO> obtenerItinerario(@PathVariable Long id) {
         logger.info("V2 GET /itinerarios/v2/{} - Obteniendo itinerario individual", id);
         
-        Itinerario itinerario = itinerarioService.buscarPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró el itinerario con ID " + id));
-                
+        Itinerario itinerario = itinerarioService.buscarPorId(id);        
         ItinerarioResponseDTO dto = itinerarioService.obtenerDetalleEnriquecido(itinerario);
         
         return assembler.toModel(dto);

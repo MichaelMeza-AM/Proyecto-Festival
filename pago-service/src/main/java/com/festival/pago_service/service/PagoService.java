@@ -34,7 +34,7 @@ public class PagoService {
         this.webClient = webClientBuilder.build();
     }
 
-    // CREATE (Ahora recibe el usuarioId)
+
     public Pago procesarPago(PagoRequestDTO request, String tokenAuth, Long usuarioId) {
         logger.info("Iniciando procesamiento de pago para la compra ID={}, MedioPago={}, Dcto={}%", 
                 request.getIdCompra(), request.getMedioPago(), request.getPorcentajeDescuento());
@@ -107,7 +107,7 @@ public class PagoService {
         }
     }
 
-    // READ (Leer todos)
+  
     public List<Pago> listarTodos() {
         logger.info("Listando todos los pagos");
         List<Pago> pagos = pagoRepository.findAll();
@@ -115,7 +115,7 @@ public class PagoService {
         return pagos;
     }
 
-    // READ (Leer por ID)
+   
     public Pago buscarPorId(Long id) {
         logger.info("Buscando pago por ID={}", id);
         return pagoRepository.findById(id).orElseThrow(() -> {
@@ -124,7 +124,6 @@ public class PagoService {
         });
     }
 
-    // UPDATE 
     public Pago actualizar(Long id, PagoRequestDTO request) {
         logger.info("Iniciando actualización de pago ID={}", id);
         try {
@@ -141,7 +140,7 @@ public class PagoService {
         }
     }
 
-    // DELETE 
+   
     public void eliminar(Long id) {
         logger.info("Iniciando eliminación de pago ID={}", id);
         try {

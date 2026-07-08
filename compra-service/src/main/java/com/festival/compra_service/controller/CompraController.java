@@ -51,8 +51,7 @@ public class CompraController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CompraResponseDTO> obtenerPorId(@PathVariable Long id, Authentication auth) {
-        Compra existente = compraService.buscarPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la compra con ID " + id));
+        Compra existente = compraService.buscarPorId(id);
 
         Long userId = Long.parseLong(auth.getName());
         boolean isAdmin = auth.getAuthorities().stream()
@@ -67,8 +66,7 @@ public class CompraController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CompraResponseDTO> actualizar(@PathVariable Long id, @Valid @RequestBody CompraRequestDTO request, Authentication auth) {
-        Compra existente = compraService.buscarPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la compra con ID " + id));
+        Compra existente = compraService.buscarPorId(id);
 
         Long userId = Long.parseLong(auth.getName());
         boolean isAdmin = auth.getAuthorities().stream()
@@ -78,22 +76,19 @@ public class CompraController {
             throw new ForbiddenException("Acceso denegado: No tienes permiso para modificar esta compra");
         }
 
-        Compra actualizada = compraService.actualizar(id, request)
-                .orElseThrow(() -> new ResourceNotFoundException("Error al actualizar la compra con ID " + id));
+        Compra actualizada = compraService.actualizar(id, request);
 
         return ResponseEntity.ok(CompraResponseDTO.fromModel(actualizada));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id, Authentication auth) {
-        Compra existente = compraService.buscarPorId(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró la compra con ID " + id));
+        Compra existente = compraService.buscarPorId(id);
 
         Long userId = Long.parseLong(auth.getName());
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ADMIN"));
 
-        // Seguridad: Solo el dueño o el admin pueden anular/borrar la compra
         if (!isAdmin && !existente.getUsuarioId().equals(userId)) {
             throw new ForbiddenException("Acceso denegado: No tienes permiso para eliminar esta compra");
         }
