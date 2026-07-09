@@ -1,6 +1,7 @@
 package com.festival.auth_service.service;
 
 import com.festival.auth_service.exception.BadRequestException;
+import com.festival.auth_service.exception.UnauthorizedException;
 import com.festival.auth_service.model.User;
 import com.festival.auth_service.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -8,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+
 
 @Service
 public class UserService {
@@ -26,17 +27,15 @@ public class UserService {
     }
 
     public String login(String email, String password) {
-        Optional<User> userOpt = userRepository.findByEmail(email);
+        // Buscamos al usuario. Si no existe, lanzamos la excepción automáticamente
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UnauthorizedException("Credenciales incorrectas"));
         
-        if (userOpt.isEmpty()) {
-            return null;
-        }
-        
-        User user = userOpt.get();
         String hashedInput = hashService.sha1(password);
         
+        // Verificamos la contraseña
         if (!hashedInput.equals(user.getPassword())) {
-            return null;
+            throw new UnauthorizedException("Credenciales incorrectas");
         }
         
         return jwtService.generateToken(user.getId(), email, user.getRole());
