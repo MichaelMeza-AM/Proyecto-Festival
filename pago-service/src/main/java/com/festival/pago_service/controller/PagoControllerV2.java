@@ -1,28 +1,22 @@
 package com.festival.pago_service.controller;
 
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.festival.pago_service.dto.PagoRequestDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.festival.pago_service.assemblers.PagoModelAssembler;
+import com.festival.pago_service.dto.PagoResponseDTO;
 import com.festival.pago_service.model.Pago;
 import com.festival.pago_service.service.PagoService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
 
 @RestController
 @RequestMapping("/pagos/v2")
@@ -43,7 +37,7 @@ public class PagoControllerV2 {
 
         List<EntityModel<PagoResponseDTO>> pagos = pagoService.listarTodos().stream()
                 .map(PagoResponseDTO::fromModel)
-                .map(assembler::toModel)
+                .map((PagoResponseDTO dto) -> assembler.toModel(dto))
                 .collect(Collectors.toList());
                 
         return CollectionModel.of(pagos, linkTo(methodOn(PagoControllerV2.class).listarTodos()).withSelfRel());
