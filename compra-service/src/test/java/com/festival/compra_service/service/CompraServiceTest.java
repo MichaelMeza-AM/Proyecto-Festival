@@ -93,8 +93,8 @@ class CompraServiceTest {
         
         Compra resultado = compraService.buscarPorId(id);
         
-        assertTrue(resultado.isPresent());
-        assertEquals(id, resultado.get().getId());
+        assertNotNull(resultado); 
+        assertEquals(id, resultado.getId());
         verify(compraRepository).findById(id);
     }
 

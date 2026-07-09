@@ -1,10 +1,12 @@
 package com.festival.compra_service.service;
+
 import com.festival.compra_service.dto.CompraRequestDTO;
 import com.festival.compra_service.model.Compra;
 import com.festival.compra_service.repository.CompraRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import com.festival.compra_service.exception.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,7 +45,7 @@ public class CompraService {
 
     public Compra buscarPorId(Long id) {
         return compraRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("No se encontró la compra con ID: " + id));
+        .orElseThrow(() -> new ResourceNotFoundException("No se encontró la compra con ID: " + id));
     }
 
     public Compra actualizar(Long id, CompraRequestDTO detallesNuevos) {
