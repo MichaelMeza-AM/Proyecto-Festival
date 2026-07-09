@@ -1,10 +1,12 @@
 package com.festival.auth_service.exception;
 
 import java.time.OffsetDateTime;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -73,5 +75,21 @@ public class GlobalExceptionHandler {
                 .path(path)
                 .build();
         return new ResponseEntity<>(error, status);
+    }
+
+    // NUEVO: Atrapa el error de login y devuelve 401
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiErrorResponse> handleUnauthorized(UnauthorizedException ex, HttpServletRequest request) {
+        return buildResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), request.getRequestURI());
+    }
+
+    // Atrapa errores de validación de los DTOs (@Valid)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        String mensajeValidacion = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+
+        return buildResponse(HttpStatus.BAD_REQUEST, mensajeValidacion, request.getRequestURI());
     }
 }

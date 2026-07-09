@@ -14,7 +14,6 @@ public class AuthController {
 
     private final UserService userService;
 
-    // Inyección por constructor
     public AuthController(UserService userService) {
         this.userService = userService;
     }
@@ -22,13 +21,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody AuthRequestDTO request) {
         String token = userService.login(request.getEmail(), request.getPassword());
-
-        if (token == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(AuthResponseDTO.builder()
-                            .mensaje("Credenciales incorrectas")
-                            .build());
-        }
 
         return ResponseEntity.ok(
                 AuthResponseDTO.builder()
