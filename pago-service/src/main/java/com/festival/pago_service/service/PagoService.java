@@ -3,6 +3,7 @@ package com.festival.pago_service.service;
 import com.festival.pago_service.dto.CompraDTO;
 import com.festival.pago_service.dto.EscenarioDTO;
 import com.festival.pago_service.dto.PagoRequestDTO;
+import com.festival.pago_service.dto.PromocionResponseDTO;
 import com.festival.pago_service.exception.BadRequestException;
 import com.festival.pago_service.exception.ResourceNotFoundException;
 import com.festival.pago_service.model.Pago;
@@ -29,138 +30,149 @@ public class PagoService {
     @Value("${api.escenario.url}")
     private String escenarioUrl;
 
+    @Value("${api.promocion.url}")
+    private String promocionUrl;
+
     public PagoService(PagoRepository pagoRepository, WebClient.Builder webClientBuilder) {
         this.pagoRepository = pagoRepository;
         this.webClient = webClientBuilder.build();
     }
 
+    public Pago guardar(PagoRequestDTO request, String tokenAuth, Long usuarioId) {
+        logger.info("Iniciando registro de pago para la compra ID={}", request.getIdCompra());
 
-    public Pago procesarPago(PagoRequestDTO request, String tokenAuth, Long usuarioId) {
-        logger.info("Iniciando procesamiento de pago para la compra ID={}, MedioPago={}, Dcto={}%", 
-                request.getIdCompra(), request.getMedioPago(), request.getPorcentajeDescuento());
+        validarQueNoEstePagada(request.getIdCompra());
 
-        try {
-            // 1. Validar duplicados
-            if (pagoRepository.existsByIdCompra(request.getIdCompra())) {
-                logger.warn("Intento de doble cobro detectado. La compra ID={} ya está pagada.", request.getIdCompra());
-                throw new BadRequestException("La compra ya se encuentra pagada. No se puede procesar el pago nuevamente.");
-            }
+        int porcentajeDescuento = obtenerDescuentoDelCupon(request.getCodigoPromocion(), tokenAuth);
+        CompraDTO compra = obtenerDatosCompra(request.getIdCompra(), tokenAuth);
+        EscenarioDTO escenario = obtenerDatosEscenario(compra.getEscenarioId(), tokenAuth);
 
-            // 2. Obtener Compra
-            logger.info("Realizando petición al microservicio de compras URI: {}", compraUrl + "/" + request.getIdCompra());
-            CompraDTO compra = webClient.get()
-                    .uri(compraUrl + "/" + request.getIdCompra())
-                    .header("Authorization", tokenAuth)
-                    .retrieve()
-                    .bodyToMono(CompraDTO.class)
-                    .block();
-
-            if (compra == null) {
-                logger.error("No se pudo obtener la compra ID={}", request.getIdCompra());
-                throw new ResourceNotFoundException("La compra solicitada no existe o el servicio no está disponible.");
-            }
-
-            // 3. Obtener Escenario (Precio)
-            logger.info("Realizando petición al microservicio de escenarios URI: {}", escenarioUrl + "/" + compra.getEscenarioId());
-            EscenarioDTO escenario = webClient.get()
-                    .uri(escenarioUrl + "/" + compra.getEscenarioId())
-                    .header("Authorization", tokenAuth)
-                    .retrieve()
-                    .bodyToMono(EscenarioDTO.class)
-                    .block();
-
-            if (escenario == null) {
-                logger.error("No se pudo obtener el escenario ID={}", compra.getEscenarioId());
-                throw new ResourceNotFoundException("El escenario asociado a esta compra no existe.");
-            }
-
-            // 4. Cálculos Matemáticos
-            int montoBase = compra.getCantidad() * escenario.getPrecio();
-            int montoDescuento = calcularMontoDescuento(montoBase, request.getPorcentajeDescuento());
-            int subtotalConDescuento = calcularSubtotalConDescuento(montoBase, montoDescuento);
-            int iva = calcularIVA(subtotalConDescuento);
-            int montoTotal = calcularTotal(subtotalConDescuento, iva);
-
-            if (montoTotal <= 0) {
-                throw new BadRequestException("El total a pagar debe ser mayor a 0.");
-            }
-
-            // 5. Guardar
-            Pago nuevoPago = new Pago();
-            nuevoPago.setUsuarioId(usuarioId); // <-- Guardamos la huella del dueño
-            nuevoPago.setIdCompra(request.getIdCompra());
-            nuevoPago.setMontoSubtotal(montoBase);
-            nuevoPago.setPorcentajeDescuento(request.getPorcentajeDescuento());
-            nuevoPago.setMontoDescuento(montoDescuento);
-            nuevoPago.setIva(iva);
-            nuevoPago.setMontoTotal(montoTotal);
-            nuevoPago.setMedioPago(request.getMedioPago());
-            nuevoPago.setFechaPago(LocalDateTime.now());
-
-            Pago pagoGuardado = pagoRepository.save(nuevoPago);
-            logger.info("Pago guardado exitosamente con ID={} por un total de ${}", pagoGuardado.getId(), montoTotal);
-            return pagoGuardado;
-
-        } catch (Exception e) {
-            logger.error("Error al procesar el pago para la compra ID={}: {}", request.getIdCompra(), e.getMessage(), e);
-            throw e;
-        }
+        Pago nuevoPago = calcularYConstruirPago(usuarioId, request, compra, escenario, porcentajeDescuento);
+        return pagoRepository.save(nuevoPago);
     }
 
-  
-    public List<Pago> listarTodos() {
-        logger.info("Listando todos los pagos");
-        List<Pago> pagos = pagoRepository.findAll();
-        logger.info("Total pagos encontrados: {}", pagos.size());
-        return pagos;
+    public List<Pago> buscarTodos() {
+        logger.info("Buscando todos los registros de pago históricos");
+        return pagoRepository.findAll();
     }
 
-   
     public Pago buscarPorId(Long id) {
-        logger.info("Buscando pago por ID={}", id);
-        return pagoRepository.findById(id).orElseThrow(() -> {
-            logger.warn("Pago no encontrado ID={}", id);
-            return new ResourceNotFoundException("El registro de pago solicitado no existe.");
-        });
+        logger.info("Buscando registro de pago por ID={}", id);
+        return pagoRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.warn("No se encontró el registro de pago con ID={}", id);
+                    return new ResourceNotFoundException("El registro de pago solicitado no existe.");
+                });
     }
 
     public Pago actualizar(Long id, PagoRequestDTO request) {
-        logger.info("Iniciando actualización de pago ID={}", id);
-        try {
-            Pago existente = buscarPorId(id);
-            
-            existente.setMedioPago(request.getMedioPago());
-            
-            Pago actualizado = pagoRepository.save(existente);
-            logger.info("Pago actualizado exitosamente ID={}", actualizado.getId());
-            return actualizado;
-        } catch (Exception e) {
-            logger.error("Error al actualizar pago ID={}: {}", id, e.getMessage(), e);
-            throw e;
-        }
+        logger.info("Iniciando proceso de actualización para el pago ID={}", id);
+        Pago existente = buscarPorId(id);
+        existente.setMedioPago(request.getMedioPago());
+        return pagoRepository.save(existente);
     }
 
-   
     public void eliminar(Long id) {
-        logger.info("Iniciando eliminación de pago ID={}", id);
-        try {
-            if (!pagoRepository.existsById(id)) {
-                logger.warn("Pago no existe para eliminar ID={}", id);
-                throw new ResourceNotFoundException("No se puede eliminar: el pago no existe.");
-            }
-            pagoRepository.deleteById(id);
-            logger.info("Pago eliminado exitosamente ID={}", id);
-        } catch (Exception e) {
-            logger.error("Error al eliminar pago ID={}: {}", id, e.getMessage(), e);
-            throw e;
+        logger.info("Iniciando proceso de eliminación para el pago ID={}", id);
+        if (!pagoRepository.existsById(id)) {
+            logger.warn("Cancelando eliminación: El registro de pago ID={} no existe.", id);
+            throw new ResourceNotFoundException("No se puede eliminar: el pago no existe.");
+        }
+        pagoRepository.deleteById(id);
+        logger.info("Registro de pago ID={} eliminado correctamente", id);
+    }
+
+
+    // MÉTODOS DE APOYO LÓGICO (INTERNOS)
+   
+    private void validarQueNoEstePagada(Long idCompra) {
+        if (pagoRepository.existsByIdCompra(idCompra)) {
+            logger.warn("Doble cobro detectado para compra ID={}", idCompra);
+            throw new BadRequestException("La compra ya se encuentra pagada.");
         }
     }
 
-    // --- MÉTODOS MATEMÁTICOS --- 
+    private int obtenerDescuentoDelCupon(String codigoPromocion, String tokenAuth) {
+        if (codigoPromocion == null || codigoPromocion.isBlank()) {
+            return 0;
+        }
 
+        PromocionResponseDTO promoResult = webClient.get()
+                .uri(promocionUrl + "/validar/" + codigoPromocion)
+                .header("Authorization", tokenAuth)
+                .retrieve()
+                .bodyToMono(PromocionResponseDTO.class)
+                .block();
+
+        if (promoResult == null || !promoResult.isEsValido()) {
+            String motivo = (promoResult != null) ? promoResult.getMensaje() : "Servicio no disponible.";
+            throw new BadRequestException("Cupón inválido: " + motivo);
+        }
+
+        return promoResult.getPorcentajeDescuento();
+    }
+
+    private CompraDTO obtenerDatosCompra(Long idCompra, String tokenAuth) {
+        CompraDTO compra = webClient.get()
+                .uri(compraUrl + "/" + idCompra)
+                .header("Authorization", tokenAuth)
+                .retrieve()
+                .bodyToMono(CompraDTO.class)
+                .block();
+
+        if (compra == null) {
+            throw new ResourceNotFoundException("La compra solicitada no existe.");
+        }
+        return compra;
+    }
+
+    private EscenarioDTO obtenerDatosEscenario(Long escenarioId, String tokenAuth) {
+        EscenarioDTO escenario = webClient.get()
+                .uri(escenarioUrl + "/" + escenarioId)
+                .header("Authorization", tokenAuth)
+                .retrieve()
+                .bodyToMono(EscenarioDTO.class)
+                .block();
+
+        if (escenario == null) {
+            throw new ResourceNotFoundException("El escenario asociado no existe.");
+        }
+        return escenario;
+    }
+
+    private Pago calcularYConstruirPago(Long usuarioId, PagoRequestDTO request, CompraDTO compra, EscenarioDTO escenario, int porcentajeDescuento) {
+        int montoBase = compra.getCantidad() * escenario.getPrecio();
+        int montoDescuento = calcularMontoDescuento(montoBase, porcentajeDescuento);
+        int subtotalConDescuento = calcularSubtotalConDescuento(montoBase, montoDescuento);
+        int iva = calcularIVA(subtotalConDescuento);
+        int montoTotal = calcularTotal(subtotalConDescuento, iva);
+
+        if (montoTotal <= 0) {
+            throw new BadRequestException("El total a pagar debe ser mayor a 0.");
+        }
+
+        Pago pago = new Pago();
+        pago.setUsuarioId(usuarioId);
+        pago.setIdCompra(request.getIdCompra());
+        pago.setMontoSubtotal(montoBase);
+        pago.setPorcentajeDescuento(porcentajeDescuento);
+        pago.setMontoDescuento(montoDescuento);
+        pago.setMontoNeto(subtotalConDescuento);
+        pago.setIva(iva);
+        pago.setMontoTotal(montoTotal);
+        pago.setMedioPago(request.getMedioPago());
+        pago.setFechaPago(LocalDateTime.now());
+        
+        return pago;
+    }
+
+
+    // MÉTODOS DE CÁLCULO MATEMÁTICO
+  
     public int calcularMontoDescuento(int montoBase, int porcentajeDescuento) {
-        if (montoBase < 0) throw new BadRequestException("El monto base no puede ser negativo");
-        if (porcentajeDescuento < 0 || porcentajeDescuento > 100) throw new BadRequestException("El descuento debe estar entre 0 y 100");
+        if (montoBase < 0 || porcentajeDescuento < 0 || porcentajeDescuento > 100) {
+            throw new BadRequestException("Parámetros matemáticos inválidos.");
+        }
         return (int) (montoBase * (porcentajeDescuento / 100.0));
     }
 
@@ -169,7 +181,9 @@ public class PagoService {
     }
 
     public int calcularIVA(int subtotalConDescuento) {
-        if (subtotalConDescuento < 0) throw new BadRequestException("El subtotal no puede ser negativo");
+        if (subtotalConDescuento < 0) {
+            throw new BadRequestException("El subtotal no puede ser negativo");
+        }
         return (int) (subtotalConDescuento * 0.19);
     }
 

@@ -17,6 +17,7 @@ public class PagoResponseDTO {
     private Integer montoSubtotal;
     private Integer porcentajeDescuento;
     private Integer montoDescuento;
+    private Integer montoNeto;
     private Integer iva;
     private Integer montoTotal;
     private String medioPago;
@@ -33,6 +34,7 @@ public class PagoResponseDTO {
                 pago.getMontoSubtotal(),
                 pago.getPorcentajeDescuento(),
                 pago.getMontoDescuento(),
+                pago.getMontoNeto(),
                 pago.getIva(),
                 pago.getMontoTotal(),
                 pago.getMedioPago(),

@@ -1,5 +1,6 @@
 x-common-env: &common-env
   jwt.secret: "esta_es_mi_compleja_clave_secreta_para_el_festival_2026"
+  TZ: "America/Santiago"
 
 services:
 
@@ -18,6 +19,7 @@ services:
       - itinerario-service
       - compra-service
       - pago-service
+      - promocion-service
 
   auth-service:
     build: ./auth-service
@@ -72,5 +74,12 @@ services:
     build: ./pago-service
     ports:
       - "8098:8098"
+    environment:
+      <<: *common-env
+  
+  promocion-service:
+    build: ./promocion-service
+    ports:
+      - "8099:8099"
     environment:
       <<: *common-env

@@ -33,7 +33,7 @@ public class PagoController {
       
         Long usuarioId = Long.parseLong(auth.getName());
         
-        Pago pagoGuardado = pagoService.procesarPago(request, tokenAuth, usuarioId);
+        Pago pagoGuardado = pagoService.guardar(request, tokenAuth, usuarioId);
         PagoResponseDTO response = PagoResponseDTO.fromModel(pagoGuardado);
         
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -42,7 +42,7 @@ public class PagoController {
 
     @GetMapping
     public ResponseEntity<List<PagoResponseDTO>> listarTodos() {
-        List<PagoResponseDTO> pagos = pagoService.listarTodos().stream()
+        List<PagoResponseDTO> pagos = pagoService.buscarTodos().stream()
                 .map(PagoResponseDTO::fromModel)
                 .collect(Collectors.toList());
         
