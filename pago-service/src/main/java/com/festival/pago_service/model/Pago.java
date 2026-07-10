@@ -33,6 +33,9 @@ public class Pago {
     @Column(nullable = false)
     private Integer montoDescuento;
 
+    @Column(name = "monto_neto", nullable = false)
+    private Integer montoNeto;
+
     @Column(nullable = false)
     private Integer iva;
 

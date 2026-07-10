@@ -35,7 +35,7 @@ public class PagoControllerV2 {
     public CollectionModel<EntityModel<PagoResponseDTO>> listarTodos() {
         logger.info("V2 GET /pagos/v2 - Listando pagos con HATEOAS");
 
-        List<EntityModel<PagoResponseDTO>> pagos = pagoService.listarTodos().stream()
+        List<EntityModel<PagoResponseDTO>> pagos = pagoService.buscarTodos().stream()
                 .map(PagoResponseDTO::fromModel)
                 .map((PagoResponseDTO dto) -> assembler.toModel(dto))
                 .collect(Collectors.toList());

@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 
 import com.festival.pago_service.dto.PagoRequestDTO;
 import com.festival.pago_service.exception.BadRequestException;
-import com.festival.pago_service.exception.ResourceNotFoundException;
 import com.festival.pago_service.model.Pago;
 import com.festival.pago_service.repository.PagoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,17 +47,22 @@ class PagoServiceTest {
         Field escenarioUrlField = PagoService.class.getDeclaredField("escenarioUrl");
         escenarioUrlField.setAccessible(true);
         escenarioUrlField.set(pagoService, "http://api/escenario");
+
+        Field promocionUrlField = PagoService.class.getDeclaredField("promocionUrl");
+        promocionUrlField.setAccessible(true);
+        promocionUrlField.set(pagoService, "http://api/promocion");
     }
 
 
     @Test
-    void testListarTodos() {
+    void testBuscarTodos() {
         Pago pago = new Pago();
         pago.setId(1L);
         pago.setMontoTotal(5950);
+        pago.setMontoNeto(5000);
         when(pagoRepository.findAll()).thenReturn(List.of(pago));
 
-        List<Pago> pagos = pagoService.listarTodos();
+        List<Pago> pagos = pagoService.buscarTodos();
 
         assertNotNull(pagos);
         assertEquals(1, pagos.size());
@@ -66,11 +70,12 @@ class PagoServiceTest {
     }
 
     @Test
-    void testObtenerPorId() {
+    void testBuscarPorId() { 
         Long id = 1L;
         Pago pago = new Pago();
         pago.setId(id);
         pago.setMontoTotal(1090);
+        pago.setMontoNeto(900);
 
         when(pagoRepository.findById(id)).thenReturn(Optional.of(pago));
 
@@ -87,6 +92,7 @@ class PagoServiceTest {
         Pago existente = new Pago();
         existente.setId(id);
         existente.setMedioPago("Efectivo");
+        existente.setMontoNeto(5000);
 
         PagoRequestDTO request = new PagoRequestDTO();
         request.setMedioPago("Tarjeta");

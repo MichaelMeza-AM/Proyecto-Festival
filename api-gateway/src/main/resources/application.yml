@@ -61,3 +61,9 @@ spring:
           uri: http://pago-service:8098
           predicates:
             - Path=/pagos/**
+        
+        # 9. Promociones 
+        - id: promocion-service
+          uri: http://promocion-service:8099
+          predicates:
+            - Path=/promociones/**

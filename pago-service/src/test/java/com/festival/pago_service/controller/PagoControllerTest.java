@@ -48,6 +48,7 @@ public class PagoControllerTest {
         pago.setMontoSubtotal(1000);
         pago.setPorcentajeDescuento(10);
         pago.setMontoDescuento(100);
+        pago.setMontoNeto(900);
         pago.setIva(171);
         pago.setMontoTotal(1071);
         pago.setMedioPago("Tarjeta");
@@ -56,7 +57,7 @@ public class PagoControllerTest {
         requestDto = new PagoRequestDTO();
         requestDto.setIdCompra(1L);
         requestDto.setMedioPago("Tarjeta");
-        requestDto.setPorcentajeDescuento(10);
+        requestDto.setCodigoPromocion("FESTIVAL2026");
 
         auth = new UsernamePasswordAuthenticationToken("2", "password", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
 
@@ -66,7 +67,7 @@ public class PagoControllerTest {
 
     @Test
     public void testListarTodos() throws Exception {
-        when(pagoService.listarTodos()).thenReturn(List.of(pago));
+        when(pagoService.buscarTodos()).thenReturn(List.of(pago));
 
         mockMvc.perform(get("/pagos"))
                 .andExpect(status().isOk())
@@ -87,7 +88,7 @@ public class PagoControllerTest {
 
     @Test
     public void testProcesarPago() throws Exception {
-        when(pagoService.procesarPago(any(PagoRequestDTO.class), anyString(), eq(2L))).thenReturn(pago);
+        when(pagoService.guardar(any(PagoRequestDTO.class), anyString(), eq(2L))).thenReturn(pago);
 
         mockMvc.perform(post("/pagos")
                         .principal(auth)
