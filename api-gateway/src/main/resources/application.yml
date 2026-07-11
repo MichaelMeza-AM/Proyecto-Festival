@@ -67,3 +67,9 @@ spring:
           uri: http://promocion-service:8099
           predicates:
             - Path=/promociones/**
+
+        # 10. Entradas / Tickets
+        - id: ticket-service
+          uri: http://ticket-service:8100 
+          predicates:
+            - Path=/tickets/**

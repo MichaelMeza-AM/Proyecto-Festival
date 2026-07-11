@@ -43,6 +43,10 @@ echo Compilando Promocion Service...
 cd ../promocion-service
 call .\mvnw clean package -DskipTests
 
+echo Compilando Ticket Service...
+cd ../ticket-service
+call .\mvnw clean package -DskipTests
+
 cd ..
 echo ¡Todos los proyectos han sido compilados con éxito!
 pause

@@ -22,6 +22,8 @@ El sistema se compone de los siguientes módulos independientes:
 7. itinerario-service: Agenda personal de los asistentes.
 8. compra-service: Lógica de reserva de entradas.
 9. pago-service: Motor financiero, cálculo de impuestos y procesamiento final.
+10. ticket-service: Generación y asignación de códigos únicos para las entradas definitivas.
+11. promocion-service: Gestión de campañas, descuentos y validación de cupones.
 
 Nota: Este repositorio contiene específicamente el código fuente de "Itinerario" y su responsabilidad es gestionar las agendas personalizadas, permitiendo a los usuarios guardar y organizar las presentaciones a las que planean asistir.
 ---
@@ -36,6 +38,8 @@ Todas las peticiones del cliente deben dirigirse al Gateway (Puerto 9090). Las r
 * Itinerarios: http://localhost:9090/itinerarios/**
 * Compras: http://localhost:9090/compras/**
 * Pagos: http://localhost:9090/pagos/**
+* Tickets: http://localhost:9090/tickets/**
+* Promociones: http://localhost:9090/promociones/**
 
 ---
 

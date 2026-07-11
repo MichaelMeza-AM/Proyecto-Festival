@@ -1,4 +1,4 @@
-# Festival Music API - [GOODSTOCK]
+# Festival Music API - GOODSTOCK
 
 ## Contexto del Sistema
 Este microservicio forma parte de una arquitectura distribuida diseñada para la gestión comercial y operativa de un festival de música. El ecosistema completo permite la administración del catálogo de artistas y escenarios, la programación de presentaciones, la creación de itinerarios y el procesamiento de transacciones financieras para la compra de entradas. Toda la persistencia de datos opera sobre bases de datos MySQL, garantizando la integridad de los registros bajo un modelo de seguridad centralizado con tokens JWT.
@@ -25,7 +25,7 @@ El sistema se compone de los siguientes módulos independientes:
 10. ticket-service: Generación y asignación de códigos únicos para las entradas definitivas.
 11. promocion-service: Gestión de campañas, descuentos y validación de cupones.
 
-Nota: Este repositorio contiene específicamente el código fuente de "Auth" y su responsabilidad directa es actuar como el proveedor de identidad del sistema. Valida las credenciales, encripta contraseñas y emite los tokens JWT que permiten la navegación segura.
+Nota: Este repositorio contiene específicamente el código fuente de "Promociones" y su responsabilidad es validar la existencia de cupones, verificar su vigencia y aplicar los porcentajes de descuento correspondientes de forma centralizada para el servicio de pagos.
 
 ---
 
@@ -41,6 +41,7 @@ Todas las peticiones del cliente deben dirigirse al Gateway (Puerto 9090). Las r
 * Pagos: http://localhost:9090/pagos/**
 * Tickets: http://localhost:9090/tickets/**
 * Promociones: http://localhost:9090/promociones/**
+
 ---
 
 ## Documentación API (Swagger)
@@ -56,9 +57,9 @@ Requisitos: Java 21, Maven y servidor MySQL en ejecución.
 
 1. Abrir la terminal en la raíz de este microservicio.
 2. Limpiar y compilar el proyecto:
-   mvnw.cmd clean compile
+   `mvnw.cmd clean compile`
 3. Iniciar la aplicación:
-   mvnw.cmd spring-boot:run
+   `mvnw.cmd spring-boot:run`
 
 ---
 
@@ -68,11 +69,11 @@ El ecosistema está diseñado para ejecutarse en contenedores mediante Docker Co
 
 1. Iniciar Docker Desktop y verificar que el motor esté en ejecución.
 2. En la raíz del proyecto general, compilar los ejecutables utilizando el script provisto:
-   ./build-all.bat
+   `./build-all.bat`
 3. Levantar la infraestructura completa en segundo plano:
-   docker-compose up 
+   `docker-compose up`
 4. Para detener la ejecución sin perder datos:
-   docker-compose stop
+   `docker-compose stop`
 
 ---
 
@@ -81,6 +82,6 @@ El ecosistema está diseñado para ejecutarse en contenedores mediante Docker Co
 Para la correcta conexión de los servicios, se requieren las siguientes variables (configuradas en el archivo application.properties o docker-compose.yml):
 
 * SECRET: Clave alfanumérica para la firma de tokens JWT.
-* SPRING_DATASOURCE_URL: Cadena de conexión a MySQL (Ej: jdbc:mysql://host.docker.internal:3306/bd_festival_auth).
+* SPRING_DATASOURCE_URL: Cadena de conexión a MySQL (Ej: jdbc:mysql://host.docker.internal:3306/bd_promociones).
 * SPRING_DATASOURCE_USERNAME: Usuario de base de datos.
 * SPRING_DATASOURCE_PASSWORD: Clave de base de datos.
