@@ -26,6 +26,12 @@ call .\mvnw clean
 cd ../pago-service
 call .\mvnw clean
 
+cd ../promocion-service
+call .\mvnw clean
+
+cd ../ticket-service
+call .\mvnw clean
+
 cd ..
 echo Limpieza completa finalizada.
 pause

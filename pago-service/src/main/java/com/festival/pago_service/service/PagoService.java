@@ -17,6 +17,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.festival.pago_service.dto.TicketRequestDTO;
+
 @Service
 public class PagoService {
 
@@ -33,6 +35,9 @@ public class PagoService {
     @Value("${api.promocion.url}")
     private String promocionUrl;
 
+    @Value("${api.ticket.url}")
+    private String ticketUrl;
+
     public PagoService(PagoRepository pagoRepository, WebClient.Builder webClientBuilder) {
         this.pagoRepository = pagoRepository;
         this.webClient = webClientBuilder.build();
@@ -48,7 +53,36 @@ public class PagoService {
         EscenarioDTO escenario = obtenerDatosEscenario(compra.getEscenarioId(), tokenAuth);
 
         Pago nuevoPago = calcularYConstruirPago(usuarioId, request, compra, escenario, porcentajeDescuento);
-        return pagoRepository.save(nuevoPago);
+        Pago pagoGuardado = pagoRepository.save(nuevoPago);
+
+        // --- COMUNICACIÓN AUTOMÁTICA CON TICKETS ---
+        logger.info("Pago exitoso. Generando {} tickets para la compra ID={}", compra.getCantidad(), request.getIdCompra());
+
+        for (int i = 0; i < compra.getCantidad(); i++) {
+            TicketRequestDTO ticketData = new TicketRequestDTO();
+            ticketData.setCompraId(request.getIdCompra());
+            ticketData.setUsuarioId(usuarioId);
+            ticketData.setEscenarioId(compra.getEscenarioId());
+            
+            // transformamos el LocalDate agregándole las 00:00:00
+            ticketData.setFechaAsistencia(compra.getFechaAsistencia().atStartOfDay());
+
+            try {
+                webClient.post()
+                        .uri(ticketUrl)
+                        .header("Authorization", tokenAuth)
+                        .bodyValue(ticketData)
+                        .retrieve()
+                        .bodyToMono(Void.class)
+                        .block();
+                        
+                logger.info("Ticket {} generado exitosamente", (i + 1));
+            } catch (Exception e) {
+                logger.error("Error al generar ticket: {}", e.getMessage());
+            }
+        }
+
+        return pagoGuardado;
     }
 
     public List<Pago> buscarTodos() {
@@ -81,7 +115,6 @@ public class PagoService {
         pagoRepository.deleteById(id);
         logger.info("Registro de pago ID={} eliminado correctamente", id);
     }
-
 
     // MÉTODOS DE APOYO LÓGICO (INTERNOS)
    
@@ -165,7 +198,6 @@ public class PagoService {
         
         return pago;
     }
-
 
     // MÉTODOS DE CÁLCULO MATEMÁTICO
   

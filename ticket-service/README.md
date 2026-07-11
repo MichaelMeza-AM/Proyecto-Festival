@@ -25,7 +25,7 @@ El sistema se compone de los siguientes módulos independientes:
 10. ticket-service: Generación y asignación de códigos únicos para las entradas definitivas.
 11. promocion-service: Gestión de campañas, descuentos y validación de cupones.
 
-Nota: Este repositorio contiene específicamente el código fuente de "Auth" y su responsabilidad directa es actuar como el proveedor de identidad del sistema. Valida las credenciales, encripta contraseñas y emite los tokens JWT que permiten la navegación segura.
+Nota: Este repositorio contiene específicamente el código fuente de "Tickets" y su responsabilidad es generar, asignar y gestionar las entradas finales con sus códigos alfanuméricos únicos una vez que un pago ha sido procesado exitosamente.
 
 ---
 
@@ -56,9 +56,9 @@ Requisitos: Java 21, Maven y servidor MySQL en ejecución.
 
 1. Abrir la terminal en la raíz de este microservicio.
 2. Limpiar y compilar el proyecto:
-   mvnw.cmd clean compile
+   `mvnw.cmd clean compile`
 3. Iniciar la aplicación:
-   mvnw.cmd spring-boot:run
+   `mvnw.cmd spring-boot:run`
 
 ---
 
@@ -68,11 +68,11 @@ El ecosistema está diseñado para ejecutarse en contenedores mediante Docker Co
 
 1. Iniciar Docker Desktop y verificar que el motor esté en ejecución.
 2. En la raíz del proyecto general, compilar los ejecutables utilizando el script provisto:
-   ./build-all.bat
+   `./build-all.bat`
 3. Levantar la infraestructura completa en segundo plano:
-   docker-compose up 
+   `docker-compose up`
 4. Para detener la ejecución sin perder datos:
-   docker-compose stop
+   `docker-compose stop`
 
 ---
 
@@ -81,6 +81,6 @@ El ecosistema está diseñado para ejecutarse en contenedores mediante Docker Co
 Para la correcta conexión de los servicios, se requieren las siguientes variables (configuradas en el archivo application.properties o docker-compose.yml):
 
 * SECRET: Clave alfanumérica para la firma de tokens JWT.
-* SPRING_DATASOURCE_URL: Cadena de conexión a MySQL (Ej: jdbc:mysql://host.docker.internal:3306/bd_festival_auth).
+* SPRING_DATASOURCE_URL: Cadena de conexión a MySQL (Ej: jdbc:mysql://host.docker.internal:3306/bd_tickets).
 * SPRING_DATASOURCE_USERNAME: Usuario de base de datos.
 * SPRING_DATASOURCE_PASSWORD: Clave de base de datos.

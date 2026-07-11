@@ -20,6 +20,7 @@ services:
       - compra-service
       - pago-service
       - promocion-service
+      - ticket-service
 
   auth-service:
     build: ./auth-service
@@ -81,5 +82,12 @@ services:
     build: ./promocion-service
     ports:
       - "8099:8099"
+    environment:
+      <<: *common-env
+      
+  ticket-service:
+    build: ./ticket-service
+    ports:
+      - "8100:8100"
     environment:
       <<: *common-env
