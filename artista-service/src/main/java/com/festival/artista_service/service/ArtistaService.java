@@ -44,11 +44,11 @@ public class ArtistaService {
 
     public Artista actualizar(Long id, Artista detallesNuevos) {
         Artista artistaExistente = buscarPorId(id);
-            // Actualizamos los campos
+        
             artistaExistente.setNombre(detallesNuevos.getNombre());
             artistaExistente.setBiografia(detallesNuevos.getBiografia());
             artistaExistente.setGeneroMusical(detallesNuevos.getGeneroMusical());
-            // Guardamos el artista modificado
+
             return artistaRepository.save(artistaExistente);
         
     }

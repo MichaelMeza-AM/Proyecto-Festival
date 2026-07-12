@@ -13,8 +13,7 @@ public class PagoServiceApplication {
 	}
 
 	@Bean
-    public WebClient.Builder webClientBuilder() {
-        return WebClient.builder();
+    public WebClient webClient(WebClient.Builder webClientBuilder) {
+        return webClientBuilder.build();
     }
-
 }

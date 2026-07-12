@@ -3,7 +3,6 @@ package com.festival.compra_service.controller;
 import com.festival.compra_service.dto.CompraRequestDTO;
 import com.festival.compra_service.dto.CompraResponseDTO;
 import com.festival.compra_service.exception.ForbiddenException;
-import com.festival.compra_service.exception.ResourceNotFoundException;
 import com.festival.compra_service.model.Compra;
 import com.festival.compra_service.service.CompraService;
 import jakarta.validation.Valid;
@@ -47,6 +46,11 @@ public class CompraController {
                 .map(CompraResponseDTO::fromModel)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/exists/{id}")
+    public ResponseEntity<Boolean> existeCompra(@PathVariable Long id) {
+        return ResponseEntity.ok(compraService.existePorId(id));
     }
 
     @GetMapping("/{id}")

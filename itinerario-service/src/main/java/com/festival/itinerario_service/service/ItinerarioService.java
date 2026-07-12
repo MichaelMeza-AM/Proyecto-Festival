@@ -61,7 +61,7 @@ public class ItinerarioService {
             throw new BadRequestException("Esta presentación ya está en tu itinerario.");
         }
 
-        // --- MODIFICACIÓN AQUÍ: Le pasamos 'null' porque es un guardado nuevo, no hay nada que ignorar ---
+        // Le pasamos 'null' porque es un guardado nuevo, no hay nada que ignorar ---
         validarCruceHorarios(itinerario.getUsuarioId(), itinerario.getPresentacionId(), null);
 
 
@@ -90,10 +90,6 @@ public class ItinerarioService {
         return itinerarioRepository.findAll();
     }
 
-    public List<Itinerario> listarPorUsuario(Long usuarioId) {
-        logger.info("Listando itinerario para usuarioId={}", usuarioId);
-        return itinerarioRepository.findByUsuarioId(usuarioId);
-    }
     
     public Itinerario actualizar(Long id, Itinerario detallesNuevos) {
         logger.info("Iniciando actualización de itinerario ID: {}", id);
@@ -131,6 +127,12 @@ public class ItinerarioService {
         }
         itinerarioRepository.deleteById(id);
         logger.info("Itinerario ID: {} eliminado con éxito", id);
+    }
+
+    
+    public List<Itinerario> listarPorUsuario(Long usuarioId) {
+        logger.info("Listando itinerario para usuarioId={}", usuarioId);
+        return itinerarioRepository.findByUsuarioId(usuarioId);
     }
 
 
@@ -175,7 +177,6 @@ public class ItinerarioService {
     }
 
     
-    // --- MODIFICACIÓN AQUÍ: Se agregó el tercer parámetro (itinerarioIdIgnorar) ---
     private void validarCruceHorarios(Long usuarioId, Long nuevaPresentacionId, Long itinerarioIdIgnorar) {
         logger.debug("Validando cruce de horarios para usuarioId={} y nueva presentacionId={}", usuarioId, nuevaPresentacionId);
 
@@ -200,7 +201,7 @@ public class ItinerarioService {
 
         for (Itinerario it : itinerariosActuales) {
             
-            // --- LA MAGIA ESTÁ AQUÍ: Ignoramos el registro que estamos actualizando ---
+            //  Ignoramos el registro que estamos actualizando ---
             if (itinerarioIdIgnorar != null && it.getId().equals(itinerarioIdIgnorar)) {
                 continue; 
             }

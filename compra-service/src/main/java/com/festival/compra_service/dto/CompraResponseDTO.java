@@ -17,7 +17,7 @@ public class CompraResponseDTO {
     private Long usuarioId;
     private Long escenarioId;
     private int cantidad;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime fechaAsistencia;
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime fechaCompra;

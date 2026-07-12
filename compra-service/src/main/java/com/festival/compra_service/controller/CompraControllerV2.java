@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.festival.compra_service.assemblers.CompraModelAssembler;
 import com.festival.compra_service.dto.CompraResponseDTO;
-import com.festival.compra_service.exception.ResourceNotFoundException;
 import com.festival.compra_service.model.Compra;
 import com.festival.compra_service.service.CompraService;
 

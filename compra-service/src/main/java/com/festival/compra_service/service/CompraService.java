@@ -10,7 +10,6 @@ import com.festival.compra_service.exception.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CompraService {
@@ -46,6 +45,10 @@ public class CompraService {
     public Compra buscarPorId(Long id) {
         return compraRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("No se encontró la compra con ID: " + id));
+    }
+
+    public boolean existePorId(Long id) {
+        return compraRepository.existsById(id);
     }
 
     public Compra actualizar(Long id, CompraRequestDTO detallesNuevos) {

@@ -123,7 +123,6 @@ public class ItinerarioController {
         logger.info("GET /itinerarios/me - Listando itinerarios para usuarioId={}", userId);
 
         List<Itinerario> itinerarios = itinerarioService.listarPorUsuario(userId);
-
         List<ItinerarioResponseDTO> dtos = itinerarios.stream()
                 .map(itinerarioService::obtenerDetalleEnriquecido)
                 .collect(Collectors.toList());

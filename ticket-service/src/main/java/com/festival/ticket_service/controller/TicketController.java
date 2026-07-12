@@ -50,7 +50,7 @@ public class TicketController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TicketResponseDTO>> listarTodos() {
+    public ResponseEntity<List<TicketResponseDTO>> listarTickets() {
         List<TicketResponseDTO> dtos = ticketService.listarTodos().stream()
                 .map(TicketResponseDTO::fromModel)
                 .collect(Collectors.toList());
@@ -72,6 +72,11 @@ public class TicketController {
         return ResponseEntity.ok(TicketResponseDTO.fromModel(existente));
     }
 
+    @GetMapping("/exists/{id}")
+    public ResponseEntity<Boolean> existeTicket(@PathVariable Long id) {
+        return ResponseEntity.ok(ticketService.existePorId(id));
+    }
+
     @GetMapping("/codigo/{codigo}")
     public ResponseEntity<TicketResponseDTO> obtenerPorCodigo(@PathVariable String codigo, Authentication auth) {
         Ticket existente = ticketService.buscarPorCodigo(codigo);
@@ -88,7 +93,7 @@ public class TicketController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TicketResponseDTO> actualizar(@PathVariable Long id, @Valid @RequestBody TicketRequestDTO request, Authentication auth) {
+    public ResponseEntity<TicketResponseDTO> actualizarTicket(@PathVariable Long id, @Valid @RequestBody TicketRequestDTO request, Authentication auth) {
         Ticket existente = ticketService.buscarPorId(id);
 
         Long userId = Long.parseLong(auth.getName());
@@ -109,7 +114,7 @@ public class TicketController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id, Authentication auth) {
+    public ResponseEntity<Void> eliminarTicket(@PathVariable Long id, Authentication auth) {
         Ticket existente = ticketService.buscarPorId(id);
 
         Long userId = Long.parseLong(auth.getName());
