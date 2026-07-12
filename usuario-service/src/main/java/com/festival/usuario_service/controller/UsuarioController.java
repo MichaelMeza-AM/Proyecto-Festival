@@ -38,7 +38,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> obtenerUsuarioPorId(@PathVariable Long id, Authentication auth) {
+    public ResponseEntity<UsuarioDTO> buscarUsuarioPorId(@PathVariable Long id, Authentication auth) {
         
         // auth.getName() extrae el "Subject" del token.
         Long userIdToken = Long.parseLong(auth.getName()); 
@@ -65,7 +65,7 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioDTO> crearPerfil(@Valid @RequestBody UsuarioDTO usuarioDTO) {
+    public ResponseEntity<UsuarioDTO> crearUsuario(@Valid @RequestBody UsuarioDTO usuarioDTO) {
         Usuario nuevo = usuarioService.guardar(usuarioDTO.toModel());
         return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioDTO.fromModel(nuevo));
     }

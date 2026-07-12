@@ -46,6 +46,18 @@ public class GlobalExceptionHandler {
                 request.getRequestURI());
     }
 
+    @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiErrorResponse> handleValidations(
+            org.springframework.web.bind.MethodArgumentNotValidException ex, 
+            HttpServletRequest request) {
+        
+        String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .collect(java.util.stream.Collectors.joining(", "));
+
+        return buildResponse(HttpStatus.BAD_REQUEST, "Error de validación: " + errorMessage, request.getRequestURI());
+    }
+
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ApiErrorResponse> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
         String mensaje = "Método no permitido. " + ex.getMessage();

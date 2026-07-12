@@ -36,11 +36,6 @@ public class ItinerarioService {
         this.webClient = webClient;
     }
 
-    public Itinerario buscarPorId(Long id) {
-        return itinerarioRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFoundException("Itinerario no encontrado"));
-    }
-
     public Itinerario guardar(Itinerario itinerario) {
         logger.info("Iniciando validación de itinerario: usuarioId={}, presentacionId={}", 
                     itinerario.getUsuarioId(), itinerario.getPresentacionId());
@@ -80,28 +75,24 @@ public class ItinerarioService {
         return guardado;
     }
 
-    private Boolean validarExistencia(String path, Long id, String tipo) {
-        try {
-            logger.debug("Llamando a {} para validar ID: {}", tipo, id);
-            return webClient.get()
-                    .uri(String.format(path, id))
-                    .retrieve()
-                    .bodyToMono(Boolean.class)
-                    .block(); 
-        } catch (Exception e) {
-            logger.error("Error de comunicación al validar {}: {}", tipo, e.getMessage());
-            throw new BadRequestException("Servicio de " + tipo + " no disponible");
-        }
+
+     public boolean existePorId(Long id) {
+        return itinerarioRepository.existsById(id);
     }
 
-    public List<Itinerario> listarPorUsuario(Long usuarioId) {
-        logger.info("Listando itinerario para usuarioId={}", usuarioId);
-        return itinerarioRepository.findByUsuarioId(usuarioId);
+    public Itinerario buscarPorId(Long id) {
+        return itinerarioRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Itinerario no encontrado"));
     }
 
     public List<Itinerario> listarTodos() {
         logger.info("Listando todos los itinerarios del sistema");
         return itinerarioRepository.findAll();
+    }
+
+    public List<Itinerario> listarPorUsuario(Long usuarioId) {
+        logger.info("Listando itinerario para usuarioId={}", usuarioId);
+        return itinerarioRepository.findByUsuarioId(usuarioId);
     }
     
     public Itinerario actualizar(Long id, Itinerario detallesNuevos) {
@@ -142,6 +133,23 @@ public class ItinerarioService {
         logger.info("Itinerario ID: {} eliminado con éxito", id);
     }
 
+
+    private Boolean validarExistencia(String path, Long id, String tipo) {
+        try {
+            logger.debug("Llamando a {} para validar ID: {}", tipo, id);
+            return webClient.get()
+                    .uri(String.format(path, id))
+                    .retrieve()
+                    .bodyToMono(Boolean.class)
+                    .block(); 
+        } catch (Exception e) {
+            logger.error("Error de comunicación al validar {}: {}", tipo, e.getMessage());
+            throw new BadRequestException("Servicio de " + tipo + " no disponible");
+        }
+    }
+
+
+
     public ItinerarioResponseDTO obtenerDetalleEnriquecido(Itinerario itinerario) {
         logger.debug("Enriqueciendo itinerario ID {} con datos de presentación ID {}", 
                      itinerario.getId(), itinerario.getPresentacionId());
@@ -166,6 +174,7 @@ public class ItinerarioService {
                 .build();
     }
 
+    
     // --- MODIFICACIÓN AQUÍ: Se agregó el tercer parámetro (itinerarioIdIgnorar) ---
     private void validarCruceHorarios(Long usuarioId, Long nuevaPresentacionId, Long itinerarioIdIgnorar) {
         logger.debug("Validando cruce de horarios para usuarioId={} y nueva presentacionId={}", usuarioId, nuevaPresentacionId);

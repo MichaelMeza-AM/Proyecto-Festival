@@ -31,18 +31,13 @@ public class SecurityConfig {
                 .pathMatchers("/auth/**").permitAll()
 
                 // 2. Catálogo de ARTISTAS (Público)
-                .pathMatchers(HttpMethod.GET, "/artistas").permitAll()
-                .pathMatchers(HttpMethod.GET, "/artistas/{id}").permitAll()
+                .pathMatchers(HttpMethod.GET, "/artistas/**").permitAll()
 
                 // 3. Catálogo de ESCENARIOS (Público)
-                .pathMatchers(HttpMethod.GET, "/escenarios").permitAll()
-                .pathMatchers(HttpMethod.GET, "/escenarios/{id}").permitAll()
+                .pathMatchers(HttpMethod.GET, "/escenarios/**").permitAll()
 
                 // 4. Catálogo de PRESENTACIONES (Público)
-                .pathMatchers(HttpMethod.GET, "/presentaciones").permitAll()
-                .pathMatchers(HttpMethod.GET, "/presentaciones/{id}").permitAll()
-                .pathMatchers(HttpMethod.GET, "/presentaciones/dia").permitAll()
-                .pathMatchers(HttpMethod.GET, "/presentaciones/genero/*").permitAll()
+                .pathMatchers(HttpMethod.GET, "/presentaciones/**").permitAll()
 
                 // 5. El resto del sistema (Escrituras, Itinerarios, Usuarios y validaciones internas)
                 .anyExchange().authenticated()
