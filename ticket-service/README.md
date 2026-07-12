@@ -25,7 +25,7 @@ El sistema se compone de los siguientes módulos independientes:
 10. ticket-service: Generación y asignación de códigos únicos para las entradas definitivas.
 11. promocion-service: Gestión de campañas, descuentos y validación de cupones.
 
-Nota: Este repositorio contiene específicamente el código fuente de "Tickets" y su responsabilidad es generar, asignar y gestionar las entradas finales con sus códigos alfanuméricos únicos una vez que un pago ha sido procesado exitosamente.
+Nota: Este repositorio contiene específicamente el código fuente de "Ticket" y su responsabilidad es generar, asignar y gestionar las entradas finales con sus códigos alfanuméricos únicos una vez que un pago ha sido procesado exitosamente.
 
 ---
 
@@ -45,8 +45,8 @@ Todas las peticiones del cliente deben dirigirse al Gateway (Puerto 9090). Las r
 
 ## Documentación API (Swagger)
 Para visualizar la documentación de los endpoints de este microservicio específico de forma aislada:
-* Interfaz de usuario: http://localhost:[PUERTO_DEL_MICROSERVICIO]/doc/swagger-ui.html
-* Formato JSON: http://localhost:[PUERTO_DEL_MICROSERVICIO]/v3/api-docs
+* Interfaz de usuario: http://localhost:8100/doc/swagger-ui.html
+* Formato JSON: http://localhost:8100/v3/api-docs
 
 ---
 

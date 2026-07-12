@@ -46,8 +46,8 @@ Todas las peticiones del cliente deben dirigirse al Gateway (Puerto 9090). Las r
 
 ## Documentación API (Swagger)
 Para visualizar la documentación de los endpoints de este microservicio específico de forma aislada:
-* Interfaz de usuario: http://localhost:[PUERTO_DEL_MICROSERVICIO]/doc/swagger-ui.html
-* Formato JSON: http://localhost:[PUERTO_DEL_MICROSERVICIO]/v3/api-docs
+* Interfaz de usuario: http://localhost:8098/doc/swagger-ui.html
+* Formato JSON: http://localhost:8098/v3/api-docs
 
 ---
 
