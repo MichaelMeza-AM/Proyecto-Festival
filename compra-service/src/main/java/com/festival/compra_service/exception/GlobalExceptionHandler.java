@@ -26,7 +26,18 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
-    // --- NUEVO: Manejador para errores 403 Forbidden ---
+    @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiErrorResponse> handleValidationExceptions(
+            org.springframework.web.bind.MethodArgumentNotValidException ex, 
+            jakarta.servlet.http.HttpServletRequest request) {
+        
+        String mensajeValidacion = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .collect(java.util.stream.Collectors.joining(", "));
+
+        return buildResponse(HttpStatus.BAD_REQUEST, "Error de validación: " + mensajeValidacion, request.getRequestURI());
+    }
+
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<ApiErrorResponse> handleForbidden(ForbiddenException ex, HttpServletRequest request) {
         return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI());

@@ -134,7 +134,7 @@ public class PromocionServiceTest {
 
         PromocionResponseDTO response = promocionService.validarPromocion("PROMO2026");
 
-        assertTrue(response.isEsValido());
+        assertTrue(response.getEsValido());
         assertEquals(20, response.getPorcentajeDescuento());
         assertTrue(response.getMensaje().contains("éxito"));
     }
@@ -146,7 +146,7 @@ public class PromocionServiceTest {
 
         PromocionResponseDTO response = promocionService.validarPromocion("PROMO2026");
 
-        assertFalse(response.isEsValido());
+        assertFalse(response.getEsValido());
         assertEquals(false, response.getActivo());
         assertTrue(response.getMensaje().contains("desactivada"));
     }
@@ -159,7 +159,7 @@ public class PromocionServiceTest {
 
         PromocionResponseDTO response = promocionService.validarPromocion("PROMO2026");
 
-        assertFalse(response.isEsValido());
+        assertFalse(response.getEsValido());
         assertTrue(response.getMensaje().contains("no está vigente"));
     }
 
@@ -171,7 +171,7 @@ public class PromocionServiceTest {
 
         PromocionResponseDTO response = promocionService.validarPromocion("PROMO2026");
 
-        assertFalse(response.isEsValido());
+        assertFalse(response.getEsValido());
         assertTrue(response.getMensaje().contains("expirado"));
     }
 }

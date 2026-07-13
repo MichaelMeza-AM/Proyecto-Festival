@@ -29,7 +29,7 @@ public class PromocionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PromocionResponseDTO>> listarTodas() {
+    public ResponseEntity<List<PromocionResponseDTO>> listarPromociones() {
         List<Promocion> promociones = promocionService.listarTodas();
         List<PromocionResponseDTO> dtos = promociones.stream()
                 .map(PromocionResponseDTO::fromModel)
@@ -53,6 +53,11 @@ public class PromocionController {
     public ResponseEntity<Void> eliminarPromocion(@PathVariable Long id) {   
         promocionService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/exists/{id}")
+    public ResponseEntity<Boolean> existePromocion(@PathVariable Long id) {
+        return ResponseEntity.ok(promocionService.existePorId(id));
     }
 
     @GetMapping("/validar/{codigo}")

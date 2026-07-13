@@ -36,8 +36,7 @@ class PagoServiceTest {
     @BeforeEach
     void setUp() throws Exception {
         // Inicializamos el servicio simulando el WebClient como en el ejemplo del profe
-        when(webClientBuilder.build()).thenReturn(webClient);
-        pagoService = new PagoService(pagoRepository, webClientBuilder);
+        pagoService = new PagoService(pagoRepository, webClient);
 
         // Usamos Reflection para inyectar las URL simuladas
         Field compraUrlField = PagoService.class.getDeclaredField("compraUrl");
@@ -51,6 +50,7 @@ class PagoServiceTest {
         Field promocionUrlField = PagoService.class.getDeclaredField("promocionUrl");
         promocionUrlField.setAccessible(true);
         promocionUrlField.set(pagoService, "http://api/promocion");
+
     }
 
 

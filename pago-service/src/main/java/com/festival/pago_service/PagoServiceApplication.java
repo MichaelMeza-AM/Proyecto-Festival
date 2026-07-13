@@ -13,8 +13,8 @@ public class PagoServiceApplication {
 	}
 
 	@Bean
-    public WebClient.Builder webClientBuilder() {
-        return WebClient.builder();
-    }
-
+	public WebClient webClient() {
+		// Al hacerlo así, creas el WebClient directamente sin pedirle el Builder a Spring.
+		return WebClient.builder().build();
+	}
 }

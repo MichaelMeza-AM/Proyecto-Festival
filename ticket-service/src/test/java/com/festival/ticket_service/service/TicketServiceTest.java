@@ -113,7 +113,6 @@ class TicketServiceTest {
     @Test
     void testActualizar() {
         Ticket detallesNuevos = new Ticket();
-        detallesNuevos.setEscenarioId(2L);
         detallesNuevos.setFechaAsistencia(LocalDateTime.now().plusDays(20));
 
         when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
@@ -121,8 +120,7 @@ class TicketServiceTest {
 
         Ticket resultado = ticketService.actualizar(1L, detallesNuevos);
 
-        assertNotNull(resultado);
-        assertEquals(2L, ticket.getEscenarioId()); 
+        assertNotNull(resultado); 
         verify(ticketRepository).findById(1L);
         verify(ticketRepository).save(any(Ticket.class));
     }

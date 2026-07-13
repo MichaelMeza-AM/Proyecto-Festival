@@ -60,6 +60,10 @@ public class TicketService {
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontró el ticket con ID: " + id));
     }
 
+    public boolean existePorId(Long id) {
+        return ticketRepository.existsById(id);
+    }
+
     public Ticket buscarPorCodigo(String codigo) {
         logger.info("Buscando ticket por Código={}", codigo);
         return ticketRepository.findByCodigo(codigo)
@@ -77,8 +81,7 @@ public class TicketService {
 
         Ticket ticketExistente = buscarPorId(id);
 
-        // Actualizamos solo los datos que pueden cambiar (no tocamos ni el ID ni el Código)
-        ticketExistente.setEscenarioId(detallesNuevos.getEscenarioId());
+        // Actualizamos solo los datos que pueden cambiar (no tocamos ni el ID ni el Código ni el Escenario)
         ticketExistente.setFechaAsistencia(detallesNuevos.getFechaAsistencia());
         
         Ticket actualizado = ticketRepository.save(ticketExistente);

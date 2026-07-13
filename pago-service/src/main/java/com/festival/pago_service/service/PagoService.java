@@ -38,9 +38,9 @@ public class PagoService {
     @Value("${api.ticket.url}")
     private String ticketUrl;
 
-    public PagoService(PagoRepository pagoRepository, WebClient.Builder webClientBuilder) {
-        this.pagoRepository = pagoRepository;
-        this.webClient = webClientBuilder.build();
+    public PagoService(PagoRepository pagoRepository, WebClient webClient) {
+    this.pagoRepository = pagoRepository;
+    this.webClient = webClient; 
     }
 
     public Pago guardar(PagoRequestDTO request, String tokenAuth, Long usuarioId) {
@@ -63,9 +63,8 @@ public class PagoService {
             ticketData.setCompraId(request.getIdCompra());
             ticketData.setUsuarioId(usuarioId);
             ticketData.setEscenarioId(compra.getEscenarioId());
-            
-            // transformamos el LocalDate agregándole las 00:00:00
-            ticketData.setFechaAsistencia(compra.getFechaAsistencia().atStartOfDay());
+        
+            ticketData.setFechaAsistencia(compra.getFechaAsistencia());
 
             try {
                 webClient.post()
@@ -88,6 +87,10 @@ public class PagoService {
     public List<Pago> buscarTodos() {
         logger.info("Buscando todos los registros de pago históricos");
         return pagoRepository.findAll();
+    }
+
+    public boolean existePorId(Long id) {
+        return pagoRepository.existsById(id);
     }
 
     public Pago buscarPorId(Long id) {

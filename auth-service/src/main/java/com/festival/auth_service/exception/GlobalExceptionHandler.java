@@ -23,12 +23,6 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiErrorResponse> handleNotFound(ResourceNotFoundException ex,
-            HttpServletRequest request) {
-        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
-    }
-
     @ExceptionHandler(WebClientResponseException.class)
     public ResponseEntity<ApiErrorResponse> handleWebClientResponse(WebClientResponseException ex,
             HttpServletRequest request) {
@@ -46,12 +40,6 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_GATEWAY,
                 "No se pudo establecer conexión con el servicio externo: " + ex.getMessage(),
                 request.getRequestURI());
-    }
-
-    // --- NUEVO: Manejador para errores 403 Forbidden ---
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ApiErrorResponse> handleForbidden(ForbiddenException ex, HttpServletRequest request) {
-        return buildResponse(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)

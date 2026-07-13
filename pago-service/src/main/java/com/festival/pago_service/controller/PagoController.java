@@ -25,7 +25,7 @@ public class PagoController {
     }
 
     @PostMapping
-    public ResponseEntity<PagoResponseDTO> procesarPago(
+    public ResponseEntity<PagoResponseDTO> crearPago(
             @RequestHeader("Authorization") String tokenAuth,
             Authentication auth,
             @Valid @RequestBody PagoRequestDTO request) {
@@ -41,12 +41,17 @@ public class PagoController {
 
 
     @GetMapping
-    public ResponseEntity<List<PagoResponseDTO>> listarTodos() {
+    public ResponseEntity<List<PagoResponseDTO>> listarPagos() {
         List<PagoResponseDTO> pagos = pagoService.buscarTodos().stream()
                 .map(PagoResponseDTO::fromModel)
                 .collect(Collectors.toList());
         
         return ResponseEntity.ok(pagos);
+    }
+
+    @GetMapping("/exists/{id}")
+    public ResponseEntity<Boolean> existePago(@PathVariable Long id) {
+        return ResponseEntity.ok(pagoService.existePorId(id));
     }
 
     @GetMapping("/{id}")
@@ -65,7 +70,7 @@ public class PagoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PagoResponseDTO> actualizar(
+    public ResponseEntity<PagoResponseDTO> actualizarPago(
             @PathVariable Long id, 
             @Valid @RequestBody PagoRequestDTO request, 
             Authentication auth) {
@@ -85,7 +90,7 @@ public class PagoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id, Authentication auth) {
+    public ResponseEntity<Void> eliminarPago(@PathVariable Long id, Authentication auth) {
         Pago existente = pagoService.buscarPorId(id);
         
         Long userId = Long.parseLong(auth.getName());

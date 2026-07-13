@@ -73,7 +73,7 @@ public class PresentacionController {
     // Endpoints administrativos para el admi
 
     @PostMapping
-    public ResponseEntity<PresentacionResponseDTO> crear(@Valid @RequestBody PresentacionRequestDTO dto) {
+    public ResponseEntity<PresentacionResponseDTO> crearPresentacion(@Valid @RequestBody PresentacionRequestDTO dto) {
         logger.info("POST /presentaciones - Petición de creación: artistaId={}, escenarioId={}", 
                     dto.getArtistaId(), dto.getEscenarioId());
 
@@ -84,7 +84,7 @@ public class PresentacionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PresentacionResponseDTO> actualizar(@PathVariable Long id, @Valid @RequestBody PresentacionRequestDTO dto) {
+    public ResponseEntity<PresentacionResponseDTO> actualizarPresentacion(@PathVariable Long id, @Valid @RequestBody PresentacionRequestDTO dto) {
         logger.info("PUT /presentaciones/{} - Petición de actualización: artistaId={}, escenarioId={}", 
                     id, dto.getArtistaId(), dto.getEscenarioId());
 
@@ -96,7 +96,7 @@ public class PresentacionController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarPresentacion(@PathVariable Long id) {
         logger.info("DELETE /presentaciones/{} - Petición de eliminación", id);
         
         presentacionService.eliminar(id);

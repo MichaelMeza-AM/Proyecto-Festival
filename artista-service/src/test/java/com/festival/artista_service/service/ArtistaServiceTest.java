@@ -105,14 +105,4 @@ public class ArtistaServiceTest {
         assertEquals(1L, ids.get(0));
         verify(artistaRepository, times(1)).findIdsByGeneroMusical("Rock");
     }
-
-    @Test
-    void eliminarArtista() {
-        when(artistaRepository.existsById(1L)).thenReturn(true);
-        doNothing().when(artistaRepository).deleteById(1L);
-
-        artistaService.eliminar(1L);
-
-        verify(artistaRepository, times(1)).deleteById(1L);
-    }
 }

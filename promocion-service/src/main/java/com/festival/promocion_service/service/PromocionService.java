@@ -54,6 +54,10 @@ public class PromocionService {
             return new ResourceNotFoundException("Promoción no encontrada con id: " + id);
         });
     }
+
+    public boolean existePorId(Long id) {
+        return promocionRepository.existsById(id);
+    }
  
     public Promocion actualizar(Long id, Promocion detallesNuevos) {
         logger.info("Iniciando proceso de actualización para la promoción ID={}", id);

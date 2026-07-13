@@ -1,6 +1,7 @@
 package com.festival.promocion_service.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.festival.promocion_service.model.Promocion;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -18,7 +19,9 @@ public class PromocionResponseDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime fechaFin;
     
-    private boolean esValido; 
+    private Boolean esValido; 
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String mensaje;   
 
     public static PromocionResponseDTO fromModel(Promocion p) {
