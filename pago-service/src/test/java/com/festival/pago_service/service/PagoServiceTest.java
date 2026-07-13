@@ -50,6 +50,7 @@ class PagoServiceTest {
         Field promocionUrlField = PagoService.class.getDeclaredField("promocionUrl");
         promocionUrlField.setAccessible(true);
         promocionUrlField.set(pagoService, "http://api/promocion");
+
     }
 
 
